@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <title>Undead Wave</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a href="#" class="logo">6조</a>
+    <ul>
+      <li><a href="#" class="active">홈</a></li>
+      <li><a href="#sec">스토리</a></li>
+      <li><a href="#play">조작 방식</a></li>
+      <li><a href="#">?</a></li>
+    </ul>
+  </header>
+  <section>
+    <img src="stars.png" id="stars">
+    <img src="moon.png" id="moon">
+    <img src="mountains_behind.png" id="mountains_behind">
+    <h2 id="text">Undead Wave</h2>
+    <a href="game.html" id="btn">게임시작</a>
+    <img src="mountains_front.png" id="mountains_front">
+    <img src="zombie.png" id="zombie">
+  </section>
+  <div class="sec" id="sec">
+    <h2>게임 스토리</h2>
+    <p>좀비 아포칼립스 세상</p>
+    <p>어느 날 갑자기 전 세계에 원인을 알 수 없는 바이러스가 퍼져 사람들이 좀비로 변했습니다.</p>
+    <p>플레이어는 살아남은 생존자 중 한 명이 되어 끝없이 몰려오는 좀비 무리 속에서 버텨야 합니다.</p>
+    <p>좀비를 해치우고 무기와 스킬을 얻어 생존하세요.</p><br>
+    <img src="story.png">
+  </div>
+  <div class="sec" id="play">
+    <h2>조작 방식</h2>
+    <p>동작 : 키보드 W A S D</p>
+    <p>공격 : 마우스 포인터로 조준</p>
+    <p>스킬 : 키보드 E R Q Shift</p>
+    <p>무기변환 : 키보드 1 2 3 4</p>
+  </div>
+
+  <script>
+    let stars = document.getElementById('stars')
+    let moon = document.getElementById('moon')
+    let mountains_behind = document.getElementById('mountains_behind')
+    let text = document.getElementById('text')
+    let btn = document.getElementById('btn')
+    let mountains_front = document.getElementById('mountains_front')
+    let zombie = document.getElementById('zombie')
+    let header = document.querySelector('header')
+
+    const initialZombieLeft = 570;
+
+    window.addEventListener('scroll', function(){
+      let value = window.scrollY;
+      stars.style.left = value * 0.25 + 'px'
+      moon.style.top = value * 1.05 + 'px'
+      mountains_behind.style.top = value * 0.5 + 'px'
+      mountains_front.style.top = value * 0 + 'px'
+      text.style.marginRight = value * 4 + 'px'
+      text.style.marginTop = value * 1.5 + 'px'
+      btn.style.marginTop = value * 1.5 + 'px'
+      header.style.top = value * 0.5 + 'px'
+
+      zombie.style.left = (initialZombieLeft + value * 0.3) + 'px'
+    })
+  </script>
+</body>
+</html>
