@@ -4,11 +4,13 @@ export class Zombie {
         this.width = 40;
         this.height = 40;
         this.color = 'green';
-        this.speed = 2;
 
         // 스폰 위치
         this.x = x;
         this.y = y;
+
+        // 좀비 스테이터스
+        this.speed = 2;
     }
 
     // 좀비 위치 업데이트(플레이어를 따라다녀야함)

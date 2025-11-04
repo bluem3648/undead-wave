@@ -6,7 +6,9 @@ import { World } from './World.js';
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
 
-
+//게임 상태
+let isGameOver = false;
+let lastFrameTime = 0; // 마지막 프레임 시간(deltaTime 계산용)
 
 // 캔버스 크기 설정 함수
 function resizeCanvas() {
@@ -58,12 +60,54 @@ document.addEventListener('keyup', function(event) {
     }
 });
 
+//------------충돌 판정 함수------------//
+function checkCollision(rect1, rect2) {
+    return (
+        rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect1.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height &&
+        rect1.y + rect1.height > rect2.y
+    );
+}
 
+// --- UI 그리기 함수 ---
+function drawUI(ctx) {
+    // 플레이어 HP 표시 
+    ctx.fillStyle = 'white';
+    ctx.font = '20px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(`HP: ${player.hp}/${player.maxHp}`, 10, 30);
+}
 
+// --- 게임 오버 화면 그리기 함수 ---
+function drawGameOverScreen() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'white';
+    ctx.font = '50px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+
+    ctx.font = '30px Arial';
+    ctx.fillText(`Score: ${player.score}`, canvas.width / 2, canvas.height / 2 + 60);
+    
+    ctx.font = '20px Arial';
+    ctx.fillText('Press F5 to Restart', canvas.width / 2, canvas.height / 2 + 100);
+}
 
 //------------게임 루프------------//
 // 게임 함수
 function update(timestamp) {
+
+    const deltaTime = timestamp - lastFrameTime;
+    lastFrameTime = timestamp;
+
+    if (isGameOver) {
+        drawGameOverScreen();
+        return;
+    }
+
     clearCanvas();
 
     // 카메라 효과 및 맵 그리기
@@ -91,20 +135,36 @@ function update(timestamp) {
     }
 
     // 플레이어 위치 업데이트
-    player.update(keys, world);
-    // 플레이어 그리기
+    player.update(keys, world, deltaTime);
     player.draw(ctx);
 
     // 좀비 위치 업데이트 및 그리기
-    zombies.forEach(zombie => {
+    for(let i = zombies.length - 1; i >= 0; i--) {
+        const zombie = zombies[i];
         zombie.update(player);
         zombie.draw(ctx);
-    });
 
+        if(checkCollision(player, zombie)) {
+            if(!player.isInvincible) player.takeDamage(1);
+
+            if(player.hp <= 0) {
+                isGameOver = true;
+            }
+        }
+    }
+
+    //카메라 변환 해제
     ctx.restore();
 
+    drawUI(ctx);
+
     // 다음 프레임 요청
-    requestAnimationFrame(update);
+    if(!isGameOver){
+        requestAnimationFrame(update);
+    }
+    else {
+        drawGameOverScreen();
+    }
 }
 
 // 캔버스 초기화
@@ -114,4 +174,6 @@ function clearCanvas() {
 
 
 // 게임 루프 시작
-requestAnimationFrame(update);
+if(!isGameOver) {
+    requestAnimationFrame(update);
+}
