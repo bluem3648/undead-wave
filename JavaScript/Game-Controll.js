@@ -2,6 +2,7 @@
 import { Player } from './Player.js';
 import { Zombie } from './Zombie.js';
 import { World } from './World.js';
+import { Bullet } from './Bullet.js';
 
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
@@ -137,6 +138,23 @@ function update(timestamp) {
     // 플레이어 위치 업데이트
     player.update(keys, world, deltaTime);
     player.draw(ctx);
+
+
+    //총
+
+    const bullets = [];
+
+    let tempTime = 0;
+    if ((timestamp - tempTime) >= 1000){
+        Bullet.spawnBullet();
+        tempTime = timestamp;
+    }
+
+    for(let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
+        bullet.update(player);
+        bullet.draw(ctx);
+    }
 
     // 좀비 위치 업데이트 및 그리기
     for(let i = zombies.length - 1; i >= 0; i--) {
