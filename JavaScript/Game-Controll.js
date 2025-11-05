@@ -35,6 +35,10 @@ const player = new Player(world.width, world.height);
 // 좀비 객체 생성(좀비는 여러 마리 -> 배열로 관리)
 const zombies = [];
 
+const bullets = [];
+
+let tempTime = 0;
+
 const SPAWN_INTERVAL = 2000;
 let lastSpawn = 0;
 
@@ -140,14 +144,16 @@ function update(timestamp) {
     player.draw(ctx);
 
 
+
+
+
     //총
-
-    const bullets = [];
-
-    let tempTime = 0;
-    if ((timestamp - tempTime) >= 1000){
-        Bullet.spawnBullet();
+    console.log('로그');
+    if (!tempTime) tempTime = timestamp;
+    if ((timestamp - tempTime) >= 100){
+        Bullet.spawnBullet(player, bullets);
         tempTime = timestamp;
+        console.log('로그');
     }
 
     for(let i = bullets.length - 1; i >= 0; i--) {
@@ -155,6 +161,10 @@ function update(timestamp) {
         bullet.update(player);
         bullet.draw(ctx);
     }
+
+
+
+    
 
     // 좀비 위치 업데이트 및 그리기
     for(let i = zombies.length - 1; i >= 0; i--) {
