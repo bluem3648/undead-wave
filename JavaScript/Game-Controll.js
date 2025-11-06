@@ -69,6 +69,23 @@ document.addEventListener('keyup', function(event) {
     }
 });
 
+
+
+//------------마우스 위치 값------------//
+
+let mouseX=0;
+let mouseY=0;
+
+document.addEventListener('mousemove', function(event) {
+
+  // 뷰포트 기준 X, Y 좌표
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+  console.log(`X: ${mouseX}, Y: ${mouseY}`);
+});
+
+
+
 //------------충돌 판정 함수------------//
 function checkCollision(rect1, rect2) {
     return (
@@ -155,7 +172,7 @@ function update(timestamp) {
     console.log('로그');
     if (!tempTime) tempTime = timestamp;
     if ((timestamp - tempTime) >= 100){
-        Bullet.spawnBullet(player, bullets);
+        Bullet.spawnBullet(mouseX, mouseY, bullets, player);
         tempTime = timestamp;
         console.log('로그');
     }
