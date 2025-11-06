@@ -35,6 +35,10 @@ export class Player{
         if(keys.s) this.y += this.speed; //아래
         if(keys.a) this.x -= this.speed; //왼쪽
         if(keys.d) this.x += this.speed; //오른쪽
+        if(keys.ㅈ) this.y -= this.speed; //위
+        if(keys.ㄴ) this.y += this.speed; //아래
+        if(keys.ㅁ) this.x -= this.speed; //왼쪽
+        if(keys.ㅇ) this.x += this.speed; //오른쪽
 
         // 0보다 왼쪽/위로 못 가게
         this.x = Math.max(0, this.x); 

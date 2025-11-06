@@ -50,7 +50,11 @@ const keys = {
     w: false,
     a: false,
     s: false,
-    d: false  
+    d: false,
+    ㅁ: false,
+    ㄴ: false,
+    ㅇ: false,
+    ㅈ: false  
 };
 
 document.addEventListener('keydown', function(event) {

@@ -22,8 +22,8 @@ export class Bullet {
 
     static spawnBullet(player, bullets) {
 
-        let x = player.x +10;
-        let y = player.y +10;
+        let x = this.x;
+        let y = this.y;
 
         const newBullet = new Bullet(x, y);
 
