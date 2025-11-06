@@ -37,10 +37,10 @@ const zombies = [];
 
 const bullets = [];
 
-let tempTime = 0;
-
 const SPAWN_INTERVAL = 2000;
 let lastSpawn = 0;
+
+let shootTime = 0; //총알 장전 시간 용
 
 
 //------------키 설정------------//
@@ -72,17 +72,14 @@ document.addEventListener('keyup', function(event) {
 
 
 //------------마우스 위치 값------------//
-
 let mouseX=0;
 let mouseY=0;
 
 document.addEventListener('mousemove', function(event) {
-
-  // 뷰포트 기준 X, Y 좌표
   mouseX = event.clientX;
   mouseY = event.clientY;
-  console.log(`X: ${mouseX}, Y: ${mouseY}`);
 });
+
 
 
 
@@ -168,15 +165,14 @@ function update(timestamp) {
 
 
 
-    //총
-    console.log('로그');
-    if (!tempTime) tempTime = timestamp;
-    if ((timestamp - tempTime) >= 100){
+    //총알 소환
+    if (!shootTime) shootTime = timestamp;
+    if ((timestamp - shootTime) >= 500){
         Bullet.spawnBullet(mouseX, mouseY, bullets, player);
-        tempTime = timestamp;
-        console.log('로그');
+        shootTime = timestamp;
     }
 
+    //총알 업데이트
     for(let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
         bullet.update(player);

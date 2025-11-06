@@ -9,22 +9,28 @@ export class Bullet {
 
         this.color = 'red';
 
-        this.targetX = mouseX;
-        this.targetY = mouseY;
-        this.angle = (mouseY - mouseY)/(this.x - this.y);
+        // this.targetX = mouseX - window.innerWidth/2;
+        // this.targetY = -1*(mouseY - window.innerHeight/2);
+        // this.angle = (this.targetY)/(this.targetX);
+        // this.sangsu = this.y - this.angle*this.x;
+
+        // console.log(`X: ${this.x}, Y: ${this.y}`);
+        // console.log(`X: ${this.sangsu}`);
+        // console.log(`각: ${this.angle}`);
         
-        this.speed = 5;
+        this.speed = 10;
+
+        this.targetX = (mouseX - window.innerWidth/2)*10;
+        this.targetY = (mouseY - window.innerHeight/2)*10;
     }
 
     update(player) {
-        // this.x = this.x + this.speed;
-        // this.y = this.angle*(this.x-this.targetX)+this.targetY;
 
         // 방향 계산
-        const dx = this.targetX - this.x;
-        const dy = this.targetY - this.y;
+        const dx = this.targetX;
+        const dy = this.targetY;
 
-        // 거리 계산(sqrt는 제곱근 , 피타고라스 정리를 이용하여 대각선 거리 구함)
+        // 거리 계산
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if(distance > 0){ 
