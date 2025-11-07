@@ -2,6 +2,7 @@
 import { Player } from './Player.js';
 import { Zombie } from './Zombie.js';
 import { World } from './World.js';
+import { Bullet } from './Bullet.js';
 
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
@@ -40,8 +41,12 @@ const player = new Player(world.width, world.height);
 // 좀비 객체 생성(좀비는 여러 마리 -> 배열로 관리)
 const zombies = [];
 
+const bullets = [];
+
 const SPAWN_INTERVAL = 2000;
 let lastSpawn = 0;
+
+let shootTime = 0; //총알 장전 시간 용
 
 
 //------------키 설정------------//
@@ -52,7 +57,11 @@ const keys = {
     a: false,
     s: false,
     d: false,
-    e: false // 'E' 키를 임시 경험치 획득용으로 추가
+    e: false, // 'E' 키를 임시 경험치 획득용으로 추가
+    ㅁ: false,
+    ㄴ: false,
+    ㅇ: false,
+    ㅈ: false  
 };
 
 document.addEventListener('keydown', function(event) {
@@ -106,6 +115,20 @@ document.addEventListener('click', function(event) {
         }
     }
 });
+
+
+
+//------------마우스 위치 값------------//
+let mouseX=0;
+let mouseY=0;
+
+document.addEventListener('mousemove', function(event) {
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+});
+
+
+
 
 //------------충돌 판정 함수------------//
 function checkCollision(rect1, rect2) {
@@ -312,6 +335,28 @@ function update(timestamp) {
     // 플레이어 위치 업데이트
     player.update(keys, world, deltaTime);
     player.draw(ctx);
+
+
+
+
+
+    //총알 소환
+    if (!shootTime) shootTime = timestamp;
+    if ((timestamp - shootTime) >= 500){
+        Bullet.spawnBullet(mouseX, mouseY, bullets, player);
+        shootTime = timestamp;
+    }
+
+    //총알 업데이트
+    for(let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
+        bullet.update(player);
+        bullet.draw(ctx);
+    }
+
+
+
+    
 
     // 좀비 위치 업데이트 및 그리기
     for(let i = zombies.length - 1; i >= 0; i--) {
