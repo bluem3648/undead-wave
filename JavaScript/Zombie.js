@@ -11,6 +11,13 @@ export class Zombie {
 
         // 좀비 스테이터스
         this.speed = 2;
+        this.hp = 3;
+        this.currentHp = this.hp;
+
+        // hp바 위치 정보
+        this.hpPosL = this.x+3;
+        this.hpPosR = this.width-3*2;
+        this.hpBar = this.hpPosR;
     }
 
     // 좀비 위치 업데이트(플레이어를 따라다녀야함)
@@ -30,9 +37,23 @@ export class Zombie {
     }
 
     draw(ctx) {
+        // 좀비 몸체 그리기
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        // 좀비 체력바 그리기
+        this.hpPosL = this.x+3;
+        this.hpPosR = this.hpBar/this.hp*this.currentHp;
+        ctx.fillStyle = 'red';
+        ctx.fillRect(this.hpPosL, this.y-15, this.hpPosR, 5);
     }
+
+
+    // 좀비 데미지 받기
+    takeDamage(amount) {
+        this.currentHp -= amount;
+    }
+
 
     static spawnZombie(world, zombies) {
         let x, y;

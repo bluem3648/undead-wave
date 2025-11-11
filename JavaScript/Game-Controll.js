@@ -41,6 +41,7 @@ const player = new Player(world.width, world.height);
 // 좀비 객체 생성(좀비는 여러 마리 -> 배열로 관리)
 const zombies = [];
 
+// 총알 객체 생성
 const bullets = [];
 
 const SPAWN_INTERVAL = 2000;
@@ -131,7 +132,7 @@ document.addEventListener('mousemove', function(event) {
 
 
 //------------충돌 판정 함수------------//
-function checkCollision(rect1, rect2) {
+function checkCollision(rect1, rect2) { 
     return (
         rect1.x < rect2.x + rect2.width &&
         rect1.x + rect1.width > rect2.x &&
@@ -352,6 +353,34 @@ function update(timestamp) {
         const bullet = bullets[i];
         bullet.update(player);
         bullet.draw(ctx);
+
+        // 총알 위치 게임창 범위 넘어가면 삭제
+        //  버그나서 수정중ㅎㅎ
+        // if (
+        //     bullet.x > (player.x + window.innerWidth/2) ||
+        //     bullet.x < (player.x - window.innerWidth/2) || 
+        //     bullet.y > (player.x + window.innerHeight/2) ||
+        //     bullet.y < (player.x - window.innerHeight/2)
+        //     )
+        //     bullets.splice(i, 1);
+    }
+
+
+    // 좀비가 총알 맞았을 때 업데이트
+    for(let i = bullets.length - 1; i >= 0; i--) {
+        for(let j = zombies.length - 1; j >= 0; j--) {
+            const bullet = bullets[i];
+            const zombie = zombies[j];
+
+            if((bullet != undefined)&&(zombie != undefined)) {
+                if(checkCollision(bullet, zombie)) {
+                    zombie.takeDamage(1);
+                    if(zombie.currentHp <= 0) //hp 0이면 좀비 배열에서 삭제
+                        zombies.splice(j, 1);
+                    bullets.splice(i,1);
+                }
+            }            
+        }
     }
 
 
@@ -386,7 +415,7 @@ function update(timestamp) {
             if(player.hp <= 0) {
                 currentState = GAME_STATE.GAMEOVER;
             }
-        }
+        } 
     }
 
     //카메라 변환 해제
