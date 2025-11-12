@@ -3,6 +3,7 @@ import { Player } from './Player.js';
 import { Zombie } from './Zombie.js';
 import { World } from './World.js';
 import { Bullet } from './Bullet.js';
+import { Bomb } from './Bomb.js';
 
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
@@ -44,10 +45,17 @@ const zombies = [];
 // 총알 객체 생성
 const bullets = [];
 
+// 폭탄 객체 생성
+const bombs = [];
+
 const SPAWN_INTERVAL = 2000;
 let lastSpawn = 0;
 
 let shootTime = 0; //총알 장전 시간 용
+
+let bombTime = 0; //폭탄 사라지는 시간
+
+let shootMod = "pistol"; // 무기 모드
 
 
 //------------키 설정------------//
@@ -62,12 +70,19 @@ const keys = {
     ㅁ: false,
     ㄴ: false,
     ㅇ: false,
-    ㅈ: false  
+    ㅈ: false
 };
 
 document.addEventListener('keydown', function(event) {
     const key = event.key.toLowerCase();
     
+    // 총 모드 전환
+    if (key == "1") shootMod = "pistol";
+    if (key == "2") shootMod = "shotgun";
+    if (key == "3") shootMod = "rifle"; 
+    if (key == "4") shootMod = "bomb";
+
+
     if (key in keys) {
         keys[key] = true;
     }
@@ -340,11 +355,75 @@ function update(timestamp) {
 
 
 
+    
 
+    //마우스 좌표계 위치 설정
+    let coordinate;
+    if ((mouseX <= window.innerWidth/2) && (mouseY <= window.innerHeight/2))
+        coordinate = "LeftUp"
+    if ((mouseX < window.innerWidth/2) && (mouseY > window.innerHeight/2))
+        coordinate = "LeftDown"
+    if ((mouseX > window.innerWidth/2) && (mouseY < window.innerHeight/2))
+        coordinate = "RightUp"
+    if ((mouseX > window.innerWidth/2) && (mouseY > window.innerHeight/2))
+        coordinate = "RightDown"
+
+
+    
     //총알 소환
+    let bulletSpawnX = player.x + 15;
+    let bulletSpawnY = player.y + 15;
     if (!shootTime) shootTime = timestamp;
-    if ((timestamp - shootTime) >= 500){
-        Bullet.spawnBullet(mouseX, mouseY, bullets, player);
+    if ( (timestamp - shootTime) >= ((shootMod == "rifle") ? 100 : 500) ){
+
+        // 권총일 때
+        if (shootMod == "pistol") 
+            Bullet.spawnBullet(mouseX, mouseY, bulletSpawnX, bulletSpawnY, bullets, 10);
+
+        // 샷건일 때
+        if (shootMod == "shotgun") {
+            let mousex;
+            let mousey;
+            if ((coordinate == "RightUp") || (coordinate == "LeftDown")) {
+                mousex = mouseX + 30;
+                mousey = mouseY + 30;
+                bulletSpawnX += 15;
+                bulletSpawnY += 15;
+            } 
+            else {
+                mousex = mouseX - 30;
+                mousey = mouseY + 30;
+                bulletSpawnX -= 15;
+                bulletSpawnY += 15;
+            }
+                
+            for (let i=0; i<3; i++) {
+                if ((coordinate == "RightUp") || (coordinate == "LeftDown")) {
+                    Bullet.spawnBullet(mousex, mousey, bulletSpawnX, bulletSpawnY, bullets, 10);
+                    mousex -= 30;
+                    mousey -= 30;
+                    bulletSpawnX -= 15;
+                    bulletSpawnY -= 15;
+                }
+                else {
+                    Bullet.spawnBullet(mousex, mousey, bulletSpawnX, bulletSpawnY, bullets, 10);
+                    mousex += 30;
+                    mousey -= 30;
+                    bulletSpawnX += 15;
+                    bulletSpawnY -= 15;
+                }
+            }
+        }
+
+        // 라이플일 때
+        if (shootMod == "rifle") 
+            Bullet.spawnBullet(mouseX, mouseY, bulletSpawnX, bulletSpawnY, bullets, 20);
+
+        // 폭탄일 때
+        if (shootMod == "bomb") {
+            Bomb.spawnBomb(mouseX, mouseY, bombs, 10, timestamp, player);
+        }
+
         shootTime = timestamp;
     }
 
@@ -355,14 +434,27 @@ function update(timestamp) {
         bullet.draw(ctx);
 
         // 총알 위치 게임창 범위 넘어가면 삭제
-        //  버그나서 수정중ㅎㅎ
-        // if (
-        //     bullet.x > (player.x + window.innerWidth/2) ||
-        //     bullet.x < (player.x - window.innerWidth/2) || 
-        //     bullet.y > (player.x + window.innerHeight/2) ||
-        //     bullet.y < (player.x - window.innerHeight/2)
-        //     )
-        //     bullets.splice(i, 1);
+        if (
+            bullet.x > (player.x + window.innerWidth/2) ||
+            bullet.x < (player.x - window.innerWidth/2) || 
+            bullet.y > (player.y + window.innerHeight/2) ||
+            bullet.y < (player.y - window.innerHeight/2)
+           )
+            bullets.splice(i, 1);
+    }
+
+
+
+    //폭탄 업데이트
+    for(let i = bombs.length - 1; i >= 0; i--) {
+        const bomb = bombs[i];
+        //bomb.update(player);
+        bomb.draw(ctx);
+
+        if (!bomb.spawnTime) bomb.spawnTime = timestamp;
+        if (timestamp - bomb.spawnTime >= 500) {
+                bombs.splice(i, 1);
+        }
     }
 
 
@@ -378,6 +470,24 @@ function update(timestamp) {
                     if(zombie.currentHp <= 0) //hp 0이면 좀비 배열에서 삭제
                         zombies.splice(j, 1);
                     bullets.splice(i,1);
+                }
+            }            
+        }
+    }
+
+
+
+    // 좀비가 폭탄 맞았을 때 업데이트
+    for(let i = bombs.length - 1; i >= 0; i--) {
+        for(let j = zombies.length - 1; j >= 0; j--) {
+            const bomb = bombs[i];
+            const zombie = zombies[j];
+
+            if((bomb != undefined)&&(zombie != undefined)) {
+                if(checkCollision(bomb, zombie)) {
+                    zombie.takeDamage(1);
+                    if(zombie.currentHp <= 0) //hp 0이면 좀비 배열에서 삭제
+                        zombies.splice(j, 1);
                 }
             }            
         }

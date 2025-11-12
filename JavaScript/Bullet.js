@@ -1,6 +1,6 @@
 export class Bullet {
     
-    constructor(x,y,mouseX,mouseY){
+    constructor(x,y,mouseX,mouseY,speed){
         this.width = 20;
         this.height = 20;
 
@@ -8,17 +8,8 @@ export class Bullet {
         this.y = y;
 
         this.color = 'red';
-
-        // this.targetX = mouseX - window.innerWidth/2;
-        // this.targetY = -1*(mouseY - window.innerHeight/2);
-        // this.angle = (this.targetY)/(this.targetX);
-        // this.sangsu = this.y - this.angle*this.x;
-
-        // console.log(`X: ${this.x}, Y: ${this.y}`);
-        // console.log(`X: ${this.sangsu}`);
-        // console.log(`각: ${this.angle}`);
         
-        this.speed = 10;
+        this.speed = speed;
 
         this.targetX = (mouseX - window.innerWidth/2)*10;
         this.targetY = (mouseY - window.innerHeight/2)*10;
@@ -45,13 +36,16 @@ export class Bullet {
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
-    static spawnBullet(mouseX, mouseY, bullets, player) {
+    static spawnBullet(mouseX, mouseY, x, y, bullets, speed) {
 
-        //총알 처음 생성 위치
-        this.x = player.x +10;
-        this.y = player.y +10;
+        //총알 처음 생성 위치 
+        // this.x = player.x +10;
+        // this.y = player.y +10;
+        this.x = x;
+        this.y = y;
+        
 
-        const newBullet = new Bullet(this.x, this.y, mouseX, mouseY);
+        const newBullet = new Bullet(this.x, this.y, mouseX, mouseY, speed);
 
         bullets.push(newBullet);
     }
