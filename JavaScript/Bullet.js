@@ -13,6 +13,10 @@ export class Bullet {
 
         this.targetX = (mouseX - window.innerWidth/2)*10;
         this.targetY = (mouseY - window.innerHeight/2)*10;
+
+        this.pistolDamage = 1;
+        this.shotgunDamage = 2;
+        this.rifleDamage = 0.5;
     }
 
     update(player) {

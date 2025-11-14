@@ -4,6 +4,8 @@ export class Bomb {
 
         this.width = 200;
         this.height = 200;
+
+        this.damage = 0.1;
     
         this.color = 'pink';
         this.spawnTime = spawntime;

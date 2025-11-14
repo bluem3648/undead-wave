@@ -200,6 +200,71 @@ function drawUI(ctx) {
         `Lv. ${player.level} - EXP: ${player.exp} / ${player.expToNextLevel}`, 
         barX + barWidth + 10, barY + 15
     );
+
+
+
+    //무기 선택창
+    let weaponX = 400;
+    let weaponY = 10;
+    let weaponWidth = 70;
+    let weaponHeight = 100;
+    ctx.lineWidth = 2;
+
+
+    // - 총
+    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    ctx.textAlign = 'center';
+    ctx.font = '16px Arial';
+    ctx.fillText(`권총`, weaponX + 35 , weaponY + 90);
+
+    shootMod == "pistol" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+
+    // - 샷건
+    weaponX += weaponWidth + 10;
+    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    ctx.textAlign = 'center';
+    ctx.font = '16px Arial';
+    ctx.fillText(`샷건`, weaponX + 35 , weaponY + 90);
+
+    shootMod == "shotgun" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+
+    // - 라이플
+    weaponX += weaponWidth + 10;
+    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    ctx.textAlign = 'center';
+    ctx.font = '16px Arial';
+    ctx.fillText(`라이플`, weaponX + 35 , weaponY + 90);
+
+    shootMod == "rifle" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+
+    // - 폭탄
+    weaponX += weaponWidth + 10;
+    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    ctx.textAlign = 'center';
+    ctx.font = '16px Arial';
+    ctx.fillText(`폭탄`, weaponX + 35 , weaponY + 90);
+
+    shootMod == "bomb" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
 }
 
 // --- 게임 오버 화면 그리기 함수 ---
@@ -373,8 +438,25 @@ function update(timestamp) {
     //총알 소환
     let bulletSpawnX = player.x + 15;
     let bulletSpawnY = player.y + 15;
+    let timer = 0;
+
+    switch (shootMod) {  //무기별 장전 시간 설정
+        case "pistol" :
+            timer = 500;
+            break;
+        case "shotgun" :
+            timer = 1000;
+            break;
+        case "rifle" :
+            timer = 100;
+            break; 
+        case "bomb" :
+            timer = 1500;
+            break;
+    }
+
     if (!shootTime) shootTime = timestamp;
-    if ( (timestamp - shootTime) >= ((shootMod == "rifle") ? 100 : 500) ){
+    if ( (timestamp - shootTime) >= timer ){
 
         // 권총일 때
         if (shootMod == "pistol") 
@@ -427,6 +509,7 @@ function update(timestamp) {
         shootTime = timestamp;
     }
 
+
     //총알 업데이트
     for(let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
@@ -452,7 +535,7 @@ function update(timestamp) {
         bomb.draw(ctx);
 
         if (!bomb.spawnTime) bomb.spawnTime = timestamp;
-        if (timestamp - bomb.spawnTime >= 500) {
+        if (timestamp - bomb.spawnTime >= 200) {
                 bombs.splice(i, 1);
         }
     }
@@ -466,7 +549,9 @@ function update(timestamp) {
 
             if((bullet != undefined)&&(zombie != undefined)) {
                 if(checkCollision(bullet, zombie)) {
-                    zombie.takeDamage(1);
+                    if (shootMod=="pistol") zombie.takeDamage(bullet.pistolDamage);
+                    if (shootMod=="shotgun") zombie.takeDamage(bullet.shotgunDamage);
+                    if (shootMod=="rifle") zombie.takeDamage(bullet.rifleDamage);
                     if(zombie.currentHp <= 0) //hp 0이면 좀비 배열에서 삭제
                         zombies.splice(j, 1);
                     bullets.splice(i,1);
@@ -485,7 +570,7 @@ function update(timestamp) {
 
             if((bomb != undefined)&&(zombie != undefined)) {
                 if(checkCollision(bomb, zombie)) {
-                    zombie.takeDamage(1);
+                    zombie.takeDamage( bomb.damage );
                     if(zombie.currentHp <= 0) //hp 0이면 좀비 배열에서 삭제
                         zombies.splice(j, 1);
                 }
