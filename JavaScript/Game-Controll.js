@@ -223,6 +223,10 @@ function drawUI(ctx) {
     shootMod == "pistol" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
+    const imgPistol = new Image();
+    imgPistol.src = "undead%20wave%20start/pistolImage.png";
+    ctx.drawImage(imgPistol, weaponX+10, weaponY+10, 50, 50);
+
 
     // - 샷건
     weaponX += weaponWidth + 10;
@@ -236,6 +240,10 @@ function drawUI(ctx) {
 
     shootMod == "shotgun" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+    const imgShotgun = new Image();
+    imgShotgun.src = "undead%20wave%20start/shotgunImage.png";
+    ctx.drawImage(imgShotgun, weaponX+10, weaponY, 50, 80);
 
 
     // - 라이플
@@ -251,6 +259,10 @@ function drawUI(ctx) {
     shootMod == "rifle" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
+    const imgRifle = new Image();
+    imgRifle.src = "undead%20wave%20start/rifleImage.png";
+    ctx.drawImage(imgRifle, weaponX+10, weaponY-10, 50, 100);
+
 
     // - 폭탄
     weaponX += weaponWidth + 10;
@@ -264,6 +276,11 @@ function drawUI(ctx) {
 
     shootMod == "bomb" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
+
+    const imgBomb = new Image();
+    imgBomb.src = "undead%20wave%20start/BombImage.png";
+    ctx.drawImage(imgBomb, weaponX+10, weaponY+10, 50, 50);
+
 
 }
 

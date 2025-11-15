@@ -48,7 +48,7 @@ export class Bomb {
         // ctx.fillRect(this.x, this.y, this.width, this.height);
 
         const img = new Image();
-        img.src = "undead%20wave%20start/bombImage.png";
+        img.src = "undead%20wave%20start/explodeImage.png";
         ctx.drawImage(img, this.x-50, this.y-30, this.width + 100, this.height + 100);
     }
 
