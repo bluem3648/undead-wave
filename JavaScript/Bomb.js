@@ -44,8 +44,12 @@ export class Bomb {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        // ctx.fillStyle = this.color;
+        // ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        const img = new Image();
+        img.src = "undead%20wave%20start/bombImage.png";
+        ctx.drawImage(img, this.x-50, this.y-30, this.width + 100, this.height + 100);
     }
 
     static spawnBomb(mouseX, mouseY, bombs, speed, spawntime, player) {
