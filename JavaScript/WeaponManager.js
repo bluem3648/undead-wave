@@ -98,13 +98,13 @@ export class WeaponManager {
                 mx = mouseX - 30; my = mouseY + 30; bX = bulletSpawnX - 15; bY = bulletSpawnY + 15;
             }
                 
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < 5; i++) {
                 if ((coordinate === "RightUp") || (coordinate === "LeftDown")) {
                     Bullet.spawnBullet(mx, my, bX, bY, this.bullets, 10);
-                    mx -= 30; my -= 30; bX -= 15; bY -= 15;
+                    mx -= 15; my -= 15; bX -= 7.5; bY -= 7.5;
                 } else {
                     Bullet.spawnBullet(mx, my, bX, bY, this.bullets, 10);
-                    mx += 30; my -= 30; bX += 15; bY -= 15;
+                    mx += 15; my -= 15; bX += 7.5; bY -= 7.5;
                 }
             }
         }

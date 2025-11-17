@@ -73,13 +73,13 @@ function drawWeaponSlot(ctx, x, y, w, h, name, imgSrc, isSelected, imgParams) {
     ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
     ctx.fillRect(x, y, w, h);
 
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    ctx.fillStyle = isSelected ? 'white' : 'rgba(200, 200, 200, 1)';
     ctx.textAlign = 'center';
     ctx.font = '16px Arial';
     ctx.fillText(name, x + w / 2, y + 90);
 
     // 선택된 무기일 경우 테두리 표시
-    ctx.strokeStyle = isSelected ? 'rgba(200, 200, 200, 0.7)' : 'transparent';
+    ctx.strokeStyle = isSelected ? 'white' : 'transparent';
     ctx.strokeRect(x, y, w, h);
 
     const img = new Image();
