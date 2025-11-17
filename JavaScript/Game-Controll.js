@@ -1,9 +1,9 @@
 //------------기본 설정------------//
-import { Player } from './Player.js';
-import { Zombie } from './Zombie.js';
+import { Player } from './Player.js';;
 import { World } from './World.js';
-import { Bullet } from './Bullet.js';
-import { Bomb } from './Bomb.js';
+import { drawUI, drawGameOverScreen, drawUpgradeOptions, calculateUpgradeOptionBounds } from './UI.js';
+import { EnemyManager } from './EnemyManager.js';
+import { WeaponManager } from './WeaponManager.js';
 
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
@@ -36,26 +36,9 @@ const world = new World(3000, 3000);
 
 //------------게임 객체 생성------------//
 
-// 플레이어 객체 생성
 const player = new Player(world.width, world.height);
-
-// 좀비 객체 생성(좀비는 여러 마리 -> 배열로 관리)
-const zombies = [];
-
-// 총알 객체 생성
-const bullets = [];
-
-// 폭탄 객체 생성
-const bombs = [];
-
-const SPAWN_INTERVAL = 2000;
-let lastSpawn = 0;
-
-let shootTime = 0; //총알 장전 시간 용
-
-let bombTime = 0; //폭탄 사라지는 시간
-
-let shootMod = "pistol"; // 무기 모드
+const enemyManager = new EnemyManager(world);
+const weaponManager = new WeaponManager(player);
 
 
 //------------키 설정------------//
@@ -77,10 +60,10 @@ document.addEventListener('keydown', function(event) {
     const key = event.key.toLowerCase();
     
     // 총 모드 전환
-    if (key == "1") shootMod = "pistol";
-    if (key == "2") shootMod = "shotgun";
-    if (key == "3") shootMod = "rifle"; 
-    if (key == "4") shootMod = "bomb";
+    if (key == "1") weaponManager.setWeapon("pistol");
+    if (key == "2") weaponManager.setWeapon("shotgun");
+    if (key == "3") weaponManager.setWeapon("rifle"); 
+    if (key == "4") weaponManager.setWeapon("bomb");
 
 
     if (key in keys) {
@@ -96,12 +79,13 @@ document.addEventListener('keydown', function(event) {
         if (didLevelUp) {
             currentState = GAME_STATE.UPGRADING;
             currentUpgradeOptions = player.getUpgradeOptions(3);
-            calculateUpgradeOptionBounds(); // UPGRADING 상태 전환 직후 좌표 계산 및 저장
+            calculateUpgradeOptionBounds(canvas, currentUpgradeOptions); // UPGRADING 상태 전환 직후 좌표 계산 및 저장
         }
     }
 });
 
 document.addEventListener('keyup', function(event) {
+    const key = event.key.toLowerCase();
     if (event.key in keys) {
         keys[event.key] = false;
     }
@@ -114,6 +98,9 @@ document.addEventListener('click', function(event) {
         const mouseY = event.clientY;
 
         for (const option of currentUpgradeOptions) {
+
+            if (!option.bounds) continue
+
             const bounds = option.bounds;
             // 박스 내 클릭인지 확인
             if (mouseX >= bounds.x && mouseX <= bounds.x + bounds.width &&
@@ -132,8 +119,6 @@ document.addEventListener('click', function(event) {
     }
 });
 
-
-
 //------------마우스 위치 값------------//
 let mouseX=0;
 let mouseY=0;
@@ -144,267 +129,48 @@ document.addEventListener('mousemove', function(event) {
 });
 
 
-
-
-//------------충돌 판정 함수------------//
-function checkCollision(rect1, rect2) { 
-    return (
-        rect1.x < rect2.x + rect2.width &&
-        rect1.x + rect1.width > rect2.x &&
-        rect1.y < rect2.y + rect2.height &&
-        rect1.y + rect1.height > rect2.y
-    );
-}
-
-// --- UI 그리기 함수 ---
-function drawUI(ctx) {
-    // 플레이어 HP 표시 
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'left';
-
-    // hp 텍스트 표시
-    let hpText = `HP: ${player.hp}/${player.maxHp}`;
-    if (player.defense >= 1) {  // 방어도 1 이상인 경우 텍스트 
-        hpText += ` | DEF: ${player.defense}`;
-    }
-    ctx.fillText(hpText, 10, 30);
-
-    // 경험치 바 표시
-    const barWidth = 200;
-    const barHeight = 20;
-    const barX = 10;
-    const barY = 50;
-    
-    // 현재 경험치 비율 계산
-    const expRatio = player.exp / player.expToNextLevel;
-    
-    // 1. 경험치 바 배경 (검은색)
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(barX, barY, barWidth, barHeight);
-
-    // 2. 경험치 채워진 부분 (노란색/금색)
-    ctx.fillStyle = 'gold';
-    ctx.fillRect(barX, barY, barWidth * expRatio, barHeight);
-
-    // 3. 경험치 바 테두리
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(barX, barY, barWidth, barHeight);
-
-    // 4. 레벨 및 경험치 텍스트
-    ctx.fillStyle = 'white';
-    ctx.textAlign = 'left';
-    ctx.font = '16px Arial';
-    ctx.fillText(
-        `Lv. ${player.level} - EXP: ${player.exp} / ${player.expToNextLevel}`, 
-        barX + barWidth + 10, barY + 15
-    );
-
-
-
-    //무기 선택창
-    let weaponX = 400;
-    let weaponY = 10;
-    let weaponWidth = 70;
-    let weaponHeight = 100;
-    ctx.lineWidth = 2;
-
-
-    // - 총
-    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
-    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
-    ctx.textAlign = 'center';
-    ctx.font = '16px Arial';
-    ctx.fillText(`권총`, weaponX + 35 , weaponY + 90);
-
-    shootMod == "pistol" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
-    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    const imgPistol = new Image();
-    imgPistol.src = "undead%20wave%20start/pistolImage.png";
-    ctx.drawImage(imgPistol, weaponX+10, weaponY+10, 50, 50);
-
-
-    // - 샷건
-    weaponX += weaponWidth + 10;
-    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
-    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
-    ctx.textAlign = 'center';
-    ctx.font = '16px Arial';
-    ctx.fillText(`샷건`, weaponX + 35 , weaponY + 90);
-
-    shootMod == "shotgun" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
-    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    const imgShotgun = new Image();
-    imgShotgun.src = "undead%20wave%20start/shotgunImage.png";
-    ctx.drawImage(imgShotgun, weaponX+10, weaponY, 50, 80);
-
-
-    // - 라이플
-    weaponX += weaponWidth + 10;
-    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
-    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
-    ctx.textAlign = 'center';
-    ctx.font = '16px Arial';
-    ctx.fillText(`라이플`, weaponX + 35 , weaponY + 90);
-
-    shootMod == "rifle" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
-    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    const imgRifle = new Image();
-    imgRifle.src = "undead%20wave%20start/rifleImage.png";
-    ctx.drawImage(imgRifle, weaponX+10, weaponY-10, 50, 100);
-
-
-    // - 폭탄
-    weaponX += weaponWidth + 10;
-    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
-    ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
-    ctx.textAlign = 'center';
-    ctx.font = '16px Arial';
-    ctx.fillText(`폭탄`, weaponX + 35 , weaponY + 90);
-
-    shootMod == "bomb" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
-    ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
-
-    const imgBomb = new Image();
-    imgBomb.src = "undead%20wave%20start/BombImage.png";
-    ctx.drawImage(imgBomb, weaponX+10, weaponY+10, 50, 50);
-
-
-}
-
-// --- 게임 오버 화면 그리기 함수 ---
-function drawGameOverScreen() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'white';
-    ctx.font = '50px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
-
-    ctx.font = '30px Arial';
-    ctx.fillText(`Score: ${player.score}`, canvas.width / 2, canvas.height / 2 + 60);
-    
-    ctx.font = '20px Arial';
-    ctx.fillText('Press F5 to Restart', canvas.width / 2, canvas.height / 2 + 100);
-}
-
-// --- 레벨업 선택지 그리기 함수 ---
-function calculateUpgradeOptionBounds() {
-    const boxWidth = 250;
-    const boxHeight = 350;
-    const padding = 30;
-    
-    // 세 개의 박스를 중앙에 배치하기 위한 계산
-    const totalWidth = boxWidth * 3 + padding * 2;
-    let startX = canvas.width / 2 - totalWidth / 2;
-    const startY = canvas.height / 2 - boxHeight / 2;
-
-    for (let i = 0; i < currentUpgradeOptions.length; i++) {
-        const x = startX + i * (boxWidth + padding);
-        const y = startY;
-        
-        // 좌표를 계산하여 옵션 객체에 bounds 속성을 미리 저장
-        currentUpgradeOptions[i].bounds = { x: x, y: y, width: boxWidth, height: boxHeight };
-    }
-}
-
-function drawUpgradeOptions(ctx) {
-    // 반투명 오버레이
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'yellow';
-    ctx.font = '40px Arial';
-    ctx.fillText('스킬 선택', canvas.width / 2, canvas.height / 2 - 200);
-
-    const boxWidth = 250;
-    const boxHeight = 350;
-    const padding = 30;
-    
-    // 세 개의 박스를 중앙에 배치
-    const totalWidth = boxWidth * 3 + padding * 2;
-    let startX = canvas.width / 2 - totalWidth / 2;
-    const startY = canvas.height / 2 - boxHeight / 2;
-
-    for (let i = 0; i < currentUpgradeOptions.length; i++) {
-        const option = currentUpgradeOptions[i];
-        const x = startX + i * (boxWidth + padding);
-        const y = startY;
-
-        // 박스 그리기
-        ctx.fillStyle = '#34495e'; // 어두운 색
-        ctx.fillRect(x, y, boxWidth, boxHeight);
-        ctx.strokeStyle = 'gold';
-        ctx.lineWidth = 5;
-        ctx.strokeRect(x, y, boxWidth, boxHeight);
-
-        // 제목
-        ctx.fillStyle = 'white';
-        ctx.font = '24px Arial';
-        ctx.fillText(option.name, x + boxWidth / 2, y + 40);
-
-        // 설명
-        ctx.font = '18px Arial';
-        ctx.fillStyle = '#bdc3c7';
-        ctx.fillText(option.description, x + boxWidth / 2, y + 100);
-    }
-}
-
 //------------게임 루프------------//
 // 게임 함수
 function update(timestamp) {
 
+    if (!lastFrameTime) lastFrameTime = timestamp;
     const deltaTime = timestamp - lastFrameTime;
     lastFrameTime = timestamp;
 
     if (currentState === GAME_STATE.GAMEOVER) {
-        drawGameOverScreen();
+        drawGameOverScreen(ctx, canvas, player.score);
         return;
     }
 
     // 레벨업으로 인한 스텟 선택 중일 시 멈춤
     if (currentState === GAME_STATE.UPGRADING) {
         clearCanvas();
-        
-        // 카메라 변환 적용 (맵이 배경으로 보이도록)
-        ctx.save();
-
-        // 카메라 위치 계산 및 적용
-        let cameraX = -player.x + canvas.width / 2;
-        let cameraY = -player.y + canvas.height / 2;
-        cameraX = Math.min(cameraX, 0);
-        cameraY = Math.max(cameraY, canvas.height - world.height);
-        ctx.translate(cameraX, cameraY);
-        world.draw(ctx); // 배경으로 월드 그리기
-        
-        // 객체 업데이트 없이 그리기만
-        player.draw(ctx);
-        zombies.forEach(z => z.draw(ctx));
-
-        ctx.restore(); // 카메라 변환 해제
-
-        drawUI(ctx);
-        drawUpgradeOptions(ctx); // 선택지 UI 그리기
-        
-        requestAnimationFrame(update); // 프레임 반복은 유지
-        return; // 상호작용 로직 스킵
+        drawPausedGame(ctx); // 배경(맵, 플레이어, 적) 그리기 (헬퍼 함수)
+        drawUI(ctx, player, weaponManager.shootMod); // UI 그리기 (UI.js 호출)
+        drawUpgradeOptions(ctx, canvas, currentUpgradeOptions); // 선택지 그리기 (UI.js 호출)
+        requestAnimationFrame(update); // 다음 그리기 요청
+        return; 
     }
 
+    // 일반 플레이 상태 업데이트
     clearCanvas();
+
+    // 플레이어, 적 스폰, 무기 업데이트
+    player.update(keys, world, deltaTime);
+    enemyManager.updateSpawning(timestamp);
+    weaponManager.update(timestamp, mouseX, mouseY, world);
+
+    //충돌 처리 로직
+    const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime);
+    
+    if (collisionResults.playerDied) {
+        currentState = GAME_STATE.GAMEOVER;
+    }
+    if (collisionResults.didLevelUp) {
+        currentState = GAME_STATE.UPGRADING;
+        currentUpgradeOptions = player.getUpgradeOptions(3);
+        calculateUpgradeOptionBounds(canvas, currentUpgradeOptions);
+    }
 
     // 카메라 효과 및 맵 그리기
     // 카메라 위치 계산
@@ -421,227 +187,38 @@ function update(timestamp) {
     ctx.save();
     ctx.translate(cameraX, cameraY);
 
+    // 그리기
     world.draw(ctx);
-
-    // 스폰 처리
-    if (!lastSpawn) lastSpawn = timestamp;
-    if (timestamp - lastSpawn >= SPAWN_INTERVAL) {
-            Zombie.spawnZombie(world, zombies);
-            lastSpawn = timestamp;
-    }
-
-    // 플레이어 위치 업데이트
-    player.update(keys, world, deltaTime);
-    player.draw(ctx);
-
-
-
-
-    
-
-    //마우스 좌표계 위치 설정
-    let coordinate;
-    if ((mouseX <= window.innerWidth/2) && (mouseY <= window.innerHeight/2))
-        coordinate = "LeftUp"
-    if ((mouseX < window.innerWidth/2) && (mouseY > window.innerHeight/2))
-        coordinate = "LeftDown"
-    if ((mouseX > window.innerWidth/2) && (mouseY < window.innerHeight/2))
-        coordinate = "RightUp"
-    if ((mouseX > window.innerWidth/2) && (mouseY > window.innerHeight/2))
-        coordinate = "RightDown"
-
-
-    
-    //총알 소환
-    let bulletSpawnX = player.x + 15;
-    let bulletSpawnY = player.y + 15;
-    let timer = 0;
-
-    switch (shootMod) {  //무기별 장전 시간 설정
-        case "pistol" :
-            timer = 500;
-            break;
-        case "shotgun" :
-            timer = 1000;
-            break;
-        case "rifle" :
-            timer = 100;
-            break; 
-        case "bomb" :
-            timer = 1500;
-            break;
-    }
-
-    if (!shootTime) shootTime = timestamp;
-    if ( (timestamp - shootTime) >= timer ){
-
-        // 권총일 때
-        if (shootMod == "pistol") 
-            Bullet.spawnBullet(mouseX, mouseY, bulletSpawnX, bulletSpawnY, bullets, 10);
-
-        // 샷건일 때
-        if (shootMod == "shotgun") {
-            let mousex;
-            let mousey;
-            if ((coordinate == "RightUp") || (coordinate == "LeftDown")) {
-                mousex = mouseX + 30;
-                mousey = mouseY + 30;
-                bulletSpawnX += 15;
-                bulletSpawnY += 15;
-            } 
-            else {
-                mousex = mouseX - 30;
-                mousey = mouseY + 30;
-                bulletSpawnX -= 15;
-                bulletSpawnY += 15;
-            }
-                
-            for (let i=0; i<3; i++) {
-                if ((coordinate == "RightUp") || (coordinate == "LeftDown")) {
-                    Bullet.spawnBullet(mousex, mousey, bulletSpawnX, bulletSpawnY, bullets, 10);
-                    mousex -= 30;
-                    mousey -= 30;
-                    bulletSpawnX -= 15;
-                    bulletSpawnY -= 15;
-                }
-                else {
-                    Bullet.spawnBullet(mousex, mousey, bulletSpawnX, bulletSpawnY, bullets, 10);
-                    mousex += 30;
-                    mousey -= 30;
-                    bulletSpawnX += 15;
-                    bulletSpawnY -= 15;
-                }
-            }
-        }
-
-        // 라이플일 때
-        if (shootMod == "rifle") 
-            Bullet.spawnBullet(mouseX, mouseY, bulletSpawnX, bulletSpawnY, bullets, 20);
-
-        // 폭탄일 때
-        if (shootMod == "bomb") {
-            Bomb.spawnBomb(mouseX, mouseY, bombs, 10, timestamp, player);
-        }
-
-        shootTime = timestamp;
-    }
-
-
-    //총알 업데이트
-    for(let i = bullets.length - 1; i >= 0; i--) {
-        const bullet = bullets[i];
-        bullet.update(player);
-        bullet.draw(ctx);
-
-        // 총알 위치 게임창 범위 넘어가면 삭제
-        if (
-            bullet.x > (player.x + window.innerWidth/2) ||
-            bullet.x < (player.x - window.innerWidth/2) || 
-            bullet.y > (player.y + window.innerHeight/2) ||
-            bullet.y < (player.y - window.innerHeight/2)
-           )
-            bullets.splice(i, 1);
-    }
-
-
-
-    //폭탄 업데이트
-    for(let i = bombs.length - 1; i >= 0; i--) {
-        const bomb = bombs[i];
-        //bomb.update(player);
-        bomb.draw(ctx);
-
-        if (!bomb.spawnTime) bomb.spawnTime = timestamp;
-        if (timestamp - bomb.spawnTime >= 200) {
-                bombs.splice(i, 1);
-        }
-    }
-
-
-    // 좀비가 총알 맞았을 때 업데이트
-    for(let i = bullets.length - 1; i >= 0; i--) {
-        for(let j = zombies.length - 1; j >= 0; j--) {
-            const bullet = bullets[i];
-            const zombie = zombies[j];
-
-            if((bullet != undefined)&&(zombie != undefined)) {
-                if(checkCollision(bullet, zombie)) {
-                    if (shootMod=="pistol") zombie.takeDamage(bullet.pistolDamage);
-                    if (shootMod=="shotgun") zombie.takeDamage(bullet.shotgunDamage);
-                    if (shootMod=="rifle") zombie.takeDamage(bullet.rifleDamage);
-                    if(zombie.currentHp <= 0) //hp 0이면 좀비 배열에서 삭제
-                        zombies.splice(j, 1);
-                    bullets.splice(i,1);
-                }
-            }            
-        }
-    }
-
-
-
-    // 좀비가 폭탄 맞았을 때 업데이트
-    for(let i = bombs.length - 1; i >= 0; i--) {
-        for(let j = zombies.length - 1; j >= 0; j--) {
-            const bomb = bombs[i];
-            const zombie = zombies[j];
-
-            if((bomb != undefined)&&(zombie != undefined)) {
-                if(checkCollision(bomb, zombie)) {
-                    zombie.takeDamage( bomb.damage );
-                    if(zombie.currentHp <= 0) //hp 0이면 좀비 배열에서 삭제
-                        zombies.splice(j, 1);
-                }
-            }            
-        }
-    }
-
-
-
-    
-
-    // 좀비 위치 업데이트 및 그리기
-    for(let i = zombies.length - 1; i >= 0; i--) {
-        const zombie = zombies[i];
-        zombie.update(player);
-        zombie.draw(ctx);
-
-        if(checkCollision(player, zombie)) {
-            /* 좀비 처치 시 경험치 획득 함수 (좀비 사망 로직이 없으므로 임시 주석 처리)
-            if (isDead) {
-                // 좀비 처치 시 경험치 획득 및 레벨업 체크
-                const didLevelUp = player.getExp(zombie.expValue); 
-
-                if (didLevelUp) {
-                    currentState = GAME_STATE.UPGRADING;
-                    currentUpgradeOptions = player.getUpgradeOptions(3);
-                }
-
-                player.score++;
-                zombies.splice(i, 1);
-                continue;
-            }
-            */
-
-            if(!player.isInvincible) player.takeDamage(1);
-
-            if(player.hp <= 0) {
-                currentState = GAME_STATE.GAMEOVER;
-            }
-        } 
-    }
+    player.draw(ctx); 
+    enemyManager.draw(ctx);
+    weaponManager.draw(ctx);
 
     //카메라 변환 해제
     ctx.restore();
 
-    drawUI(ctx);
+    drawUI(ctx, player, weaponManager.shootMod);
 
-    // 다음 프레임 요청
-    if(currentState !== GAME_STATE.GAMEOVER){
-        requestAnimationFrame(update);
-    }
-    else {
-        drawGameOverScreen();
-    }
+    requestAnimationFrame(update);
+}
+
+// 일시정지 상태에서의 그리기 함수
+function drawPausedGame(ctx) {
+    // (update 루프의 카메라 로직과 동일)
+    let cameraX = -player.x + canvas.width / 2;
+    let cameraY = -player.y + canvas.height / 2;
+    cameraX = Math.min(cameraX, 0);
+    cameraY = Math.min(cameraY, 0);
+    cameraX = Math.max(cameraX, canvas.width - world.width);
+    cameraY = Math.max(cameraY, canvas.height - world.height);
+    
+    ctx.save();
+    ctx.translate(cameraX, cameraY);
+    // (업데이트 없이 그리기만 호출)
+    world.draw(ctx);
+    player.draw(ctx);
+    enemyManager.draw(ctx);
+    weaponManager.draw(ctx);
+    ctx.restore();
 }
 
 // 캔버스 초기화
