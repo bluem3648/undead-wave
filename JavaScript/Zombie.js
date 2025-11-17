@@ -38,14 +38,17 @@ export class Zombie {
 
     draw(ctx) {
         // 좀비 몸체 그리기
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        // ctx.fillStyle = this.color;
+        // ctx.fillRect(this.x, this.y, this.width, this.height);
+        const img = new Image();
+        img.src = "undead%20wave%20start/zombie.png";
+        ctx.drawImage(img, this.x-10, this.y-10, this.width+25, this.height+25);
 
         // 좀비 체력바 그리기
         this.hpPosL = this.x+3;
         this.hpPosR = this.hpBar/this.hp*this.currentHp;
         ctx.fillStyle = 'red';
-        ctx.fillRect(this.hpPosL, this.y-15, this.hpPosR, 5);
+        ctx.fillRect(this.hpPosL, this.y-15, this.hpPosR, 3);
     }
 
 
