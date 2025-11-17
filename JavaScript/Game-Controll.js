@@ -215,16 +215,16 @@ function drawUI(ctx) {
     ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
     ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    shootMod == "pistol" ? ctx.fillStyle = 'white' : ctx.fillStyle = 'rgba(200, 200, 200, 1)';
     ctx.textAlign = 'center';
     ctx.font = '16px Arial';
     ctx.fillText(`권총`, weaponX + 35 , weaponY + 90);
 
-    shootMod == "pistol" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    shootMod == "pistol" ? ctx.strokeStyle = 'white' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
     const imgPistol = new Image();
-    imgPistol.src = "undead%20wave%20start/pistolImage.png";
+    imgPistol.src = "resource/weapon_image/pistol.png";
     ctx.drawImage(imgPistol, weaponX+10, weaponY+10, 50, 50);
 
 
@@ -233,16 +233,16 @@ function drawUI(ctx) {
     ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
     ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    shootMod == "shotgun" ? ctx.fillStyle = 'white' : ctx.fillStyle = 'rgba(200, 200, 200, 1)';
     ctx.textAlign = 'center';
     ctx.font = '16px Arial';
     ctx.fillText(`샷건`, weaponX + 35 , weaponY + 90);
 
-    shootMod == "shotgun" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    shootMod == "shotgun" ? ctx.strokeStyle = 'white' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
     const imgShotgun = new Image();
-    imgShotgun.src = "undead%20wave%20start/shotgunImage.png";
+    imgShotgun.src = "resource/weapon_image/shotgun.png";
     ctx.drawImage(imgShotgun, weaponX+10, weaponY, 50, 80);
 
 
@@ -251,16 +251,16 @@ function drawUI(ctx) {
     ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
     ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    shootMod == "rifle" ? ctx.fillStyle = 'white' : ctx.fillStyle = 'rgba(200, 200, 200, 1)';
     ctx.textAlign = 'center';
     ctx.font = '16px Arial';
     ctx.fillText(`라이플`, weaponX + 35 , weaponY + 90);
 
-    shootMod == "rifle" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    shootMod == "rifle" ? ctx.strokeStyle = 'white' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
     const imgRifle = new Image();
-    imgRifle.src = "undead%20wave%20start/rifleImage.png";
+    imgRifle.src = "resource/weapon_image/rifle.png";
     ctx.drawImage(imgRifle, weaponX+10, weaponY-10, 50, 100);
 
 
@@ -269,16 +269,16 @@ function drawUI(ctx) {
     ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
     ctx.fillRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
-    ctx.fillStyle = 'rgba(200, 200, 200, 1)';
+    shootMod == "bomb" ? ctx.fillStyle = 'white' : ctx.fillStyle = 'rgba(200, 200, 200, 1)';
     ctx.textAlign = 'center';
     ctx.font = '16px Arial';
     ctx.fillText(`폭탄`, weaponX + 35 , weaponY + 90);
 
-    shootMod == "bomb" ? ctx.strokeStyle = 'rgba(200, 200, 200, 0.7)' : ctx.strokeStyle = 'transparent'
+    shootMod == "bomb" ? ctx.strokeStyle = 'white' : ctx.strokeStyle = 'transparent'
     ctx.strokeRect(weaponX, weaponY, weaponWidth, weaponHeight);
 
     const imgBomb = new Image();
-    imgBomb.src = "undead%20wave%20start/BombImage.png";
+    imgBomb.src = "resource/weapon_image/Bomb.png";
     ctx.drawImage(imgBomb, weaponX+10, weaponY+10, 50, 50);
 
 
@@ -496,20 +496,20 @@ function update(timestamp) {
                 bulletSpawnY += 15;
             }
                 
-            for (let i=0; i<3; i++) {
+            for (let i=0; i<5; i++) {
                 if ((coordinate == "RightUp") || (coordinate == "LeftDown")) {
                     Bullet.spawnBullet(mousex, mousey, bulletSpawnX, bulletSpawnY, bullets, 10);
-                    mousex -= 30;
-                    mousey -= 30;
-                    bulletSpawnX -= 15;
-                    bulletSpawnY -= 15;
+                    mousex -= 15;
+                    mousey -= 15;
+                    bulletSpawnX -= 7.5;
+                    bulletSpawnY -= 7.5;
                 }
                 else {
                     Bullet.spawnBullet(mousex, mousey, bulletSpawnX, bulletSpawnY, bullets, 10);
-                    mousex += 30;
-                    mousey -= 30;
-                    bulletSpawnX += 15;
-                    bulletSpawnY -= 15;
+                    mousex += 15;
+                    mousey -= 15;
+                    bulletSpawnX += 7.5;
+                    bulletSpawnY -= 7.5;
                 }
             }
         }

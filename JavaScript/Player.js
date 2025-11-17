@@ -65,13 +65,22 @@ export class Player{
 
     // draw 플레이어 그리기
     draw(ctx) {
-        if (this.isInvincible && Math.floor(this.invincibilityTimer / 100) % 2 === 0) {
+
+        const img = new Image();
+        img.src = "undead%20wave%20start/idle.gif";
+
+        if (this.isInvincible) {
+            img.src = "undead%20wave%20start/hurt.gif";
+
             // 무적일 때 잠깐 안 보이게 (깜빡임 효과)
-            return; 
+            if (Math.floor(this.invincibilityTimer / 100) % 2 === 0)
+                return;     
         }
 
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        // ctx.fillStyle = this.color;
+        // ctx.fillRect(this.x, this.y, this.width, this.height);
+            
+        ctx.drawImage(img, this.x, this.y-10, this.width+20, this.height+20);
     }
 
     // 데미지 입는 함수
