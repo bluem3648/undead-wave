@@ -11,7 +11,7 @@ export class Player{
         this.setInitialPosition(worldWidth, worldHeight);
 
         //플레이어 스테이터스
-        this.speed = 5;
+        this.speed = 2;
         this.maxHp = 4;
         this.hp = this.maxHp;
         this.defense = 0;

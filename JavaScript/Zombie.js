@@ -10,7 +10,7 @@ export class Zombie {
         this.y = y;
 
         // 좀비 스테이터스
-        this.speed = 2;
+        this.speed = 1;
         this.hp = 3;
         this.currentHp = this.hp;
 

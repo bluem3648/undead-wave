@@ -1,11 +1,18 @@
 import { Zombie } from './Zombie.js';
 import { checkCollision } from './Utils.js'; 
+import { BossZombie } from './BossZombie.js';
 
 
 export class EnemyManager {
     constructor(world) {
         this.world = world;
         this.zombies = []; // 일반 좀비 목록
+
+        this.bossZombie = null; 
+        this.BOSS_SPAWN_TIME = 3000; // 보스 스폰 시간 (10초) 테스트용
+        this.bossSpawned = false;
+        this.gameElapsedTime = 0; // 게임 경과 시간 (보스 타이머용)
+        this.lastFrameTime = 0; // 보스 타이머의 deltaTime 계산용
 
         // 스폰 설정
         this.SPAWN_INTERVAL = 2000;
@@ -24,7 +31,29 @@ export class EnemyManager {
             Zombie.spawnZombie(this.world, this.zombies);
             this.lastSpawn = timestamp;
         }
+
+         // 보스 좀비 스폰 타이머 업데이트
+        if (!this.lastFrameTime) this.lastFrameTime = timestamp;
+        this.gameElapsedTime += (timestamp - this.lastFrameTime);
+        this.lastFrameTime = timestamp;
+
+        // 보스 좀비 스폰
+        if (!this.bossSpawned && this.gameElapsedTime >= this.BOSS_SPAWN_TIME) {
+            let bossX, bossY;
+            // 월드 밖 랜덤 위치
+            if (Math.random() < 0.5) {
+                bossX = Math.random() * this.world.width;
+                bossY = Math.random() < 0.5 ? -100 : this.world.height + 100;
+            } else {
+                bossX = Math.random() < 0.5 ? -100 : this.world.width + 100;
+                bossY = Math.random() * this.world.height;
+            }
+            this.bossZombie = new BossZombie(bossX, bossY); 
+            this.bossSpawned = true; // 스폰됨
+            console.log("보스 좀비 스폰!");
+        }
     }
+
 
     /**
      * @param {Player} player - 플레이어 객체
@@ -94,11 +123,73 @@ export class EnemyManager {
             }
         }
 
+        if (this.bossZombie) { // 보스가 존재할 경우에만 실행
+            this.bossZombie.update(player); 
+
+            // 충돌 A: 플레이어 vs 보스
+            if (checkCollision(player, this.bossZombie)) {
+                if (!player.isInvincible) player.takeDamage(this.bossZombie.damage); 
+                if (player.hp <= 0) playerDied = true;
+            }
+
+            // 충돌 B: 총알 vs 보스
+            for (const bullet of weaponManager.bullets) {
+                if(checkCollision(bullet, this.bossZombie)) {
+                    let damage = 0;
+                    const shootMod = weaponManager.shootMod;
+                    
+                    if (shootMod === "pistol") damage = bullet.pistolDamage;
+                    else if (shootMod === "shotgun") damage = bullet.shotgunDamage;
+                    else if (shootMod === "rifle") damage = bullet.rifleDamage;
+
+                    this.bossZombie.takeDamage(damage); 
+                    
+                    if (this.bossZombie.currentHp <= 0) {
+                        // 보스 사망 처리
+                        const expGained = this.bossZombie.expValue; // 보스 경험치
+                        const levelUp = player.getExp(expGained);
+                        if (levelUp) didLevelUp = true;
+                        
+                        player.score += 100; // 보스 처치 점수
+                        this.bossZombie = null; 
+                        this.bossSpawned = false; 
+                        this.gameElapsedTime = 0;
+                    }
+                    
+                    weaponManager.removeBullet(bullet); // 총알 제거
+                    break; 
+                }
+            }
+
+            // 충돌 C: 폭탄 vs 보스
+            for (const bomb of weaponManager.bombs) {
+                if(checkCollision(bomb, this.bossZombie)) {
+                    this.bossZombie.takeDamage(bomb.damage); 
+                    if (this.bossZombie.currentHp <= 0) {
+                       
+                        const expGained = this.bossZombie.expValue || 10;
+                        const levelUp = player.getExp(expGained);
+                        if (levelUp) didLevelUp = true;
+                        
+                        player.score += 100;
+                        this.bossZombie = null;
+                        this.bossSpawned = false;
+                        this.gameElapsedTime = 0;
+                        break; // 보스가 죽었으므로 루프 중단
+                    }
+                }
+            }
+        }
+
         // 최종 결과 반환
         return { playerDied, didLevelUp };
     }
 
     draw(ctx) {
         this.zombies.forEach(zombie => zombie.draw(ctx));
+
+        if (this.bossZombie) {
+            this.bossZombie.draw(ctx);
+        }
     }
 }
