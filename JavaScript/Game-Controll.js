@@ -49,7 +49,6 @@ const keys = {
     a: false,
     s: false,
     d: false,
-    e: false, // 'E' 키를 임시 경험치 획득용으로 추가
     ㅁ: false,
     ㄴ: false,
     ㅇ: false,
@@ -68,19 +67,6 @@ document.addEventListener('keydown', function(event) {
 
     if (key in keys) {
         keys[key] = true;
-    }
-
-    // --- 'E' 키 입력 시 경험치 획득 로직 (테스트용) ---
-    if (key === 'e' && currentState === GAME_STATE.PLAYING) {
-        const TEMP_EXP_GAIN = 5; 
-        const didLevelUp = player.getExp(TEMP_EXP_GAIN); 
-        
-        // 레벨업이 발생했으면 상태 전환
-        if (didLevelUp) {
-            currentState = GAME_STATE.UPGRADING;
-            currentUpgradeOptions = player.getUpgradeOptions(3);
-            calculateUpgradeOptionBounds(canvas, currentUpgradeOptions); // UPGRADING 상태 전환 직후 좌표 계산 및 저장
-        }
     }
 });
 
