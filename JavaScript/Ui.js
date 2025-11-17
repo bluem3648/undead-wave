@@ -51,19 +51,19 @@ export function drawUI(ctx, player, shootMod) {
     // (이 리팩토링에서는 원본 코드의 로직을 그대로 유지합니다)
 
     // - 권총
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "권총", "undead%20wave%20start/pistolImage.png", shootMod === "pistol", {x:10, y:10, w:50, h:50});
+    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "권총", "resource/weapon_image/pistol.png", shootMod === "pistol", {x:10, y:10, w:50, h:50});
     
     // - 샷건
     weaponX += weaponWidth + 10;
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "샷건", "undead%20wave%20start/shotgunImage.png", shootMod === "shotgun", {x:10, y:0, w:50, h:80});
+    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "샷건", "resource/weapon_image/shotgun.png", shootMod === "shotgun", {x:10, y:0, w:50, h:80});
 
     // - 라이플
     weaponX += weaponWidth + 10;
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "라이플", "undead%20wave%20start/rifleImage.png", shootMod === "rifle", {x:10, y:-10, w:50, h:100});
+    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "라이플", "resource/weapon_image/rifle.png", shootMod === "rifle", {x:10, y:-10, w:50, h:100});
 
     // - 폭탄
     weaponX += weaponWidth + 10;
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "폭탄", "undead%20wave%20start/BombImage.png", shootMod === "bomb", {x:10, y:10, w:50, h:50});
+    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "폭탄", "resource/weapon_image/Bomb.png", shootMod === "bomb", {x:10, y:10, w:50, h:50});
 }
 
 /**

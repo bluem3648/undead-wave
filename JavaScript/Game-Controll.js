@@ -179,6 +179,7 @@ function update(timestamp) {
     enemyManager.draw(ctx);
     weaponManager.draw(ctx);
 
+
     //카메라 변환 해제
     ctx.restore();
 

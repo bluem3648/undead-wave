@@ -17,7 +17,7 @@ export class Bullet {
         this.cos = this.targetX / Math.sqrt(this.targetX*this.targetX + this.targetY*this.targetY); //  밑변 / 빗변 = 코사인 값
 
         this.pistolDamage = 1;
-        this.shotgunDamage = 2;
+        this.shotgunDamage = 1;
         this.rifleDamage = 0.5;
     }
 
@@ -44,46 +44,45 @@ export class Bullet {
         // 1사분면
         if ((this.targetX>=0) && (this.targetY<=0)) {
             if ((this.cos <= 1) && (this.cos >= Math.sqrt(3)/2))
-                img.src = "undead%20wave%20start/bulletImage1.png";
+                img.src = "resource/bullet_image/bullet1.png";
             if ((this.cos < Math.sqrt(3)/2) && (this.cos >= 1/2))
-                img.src = "undead%20wave%20start/bulletImage2.png";
+                img.src = "resource/bullet_image/bullet2.png";
             if ((this.cos < 1/2) && (this.cos >= 0))
-                img.src = "undead%20wave%20start/bulletImage3.png";
+                img.src = "resource/bullet_image/bullet3.png";
         }
 
         // 2사분면
         if ((this.targetX<0) && (this.targetY<0)) {
             if ((this.cos < 0) && (this.cos >= -1/2))
-                img.src = "undead%20wave%20start/bulletImage3.png";
+                img.src = "resource/bullet_image/bullet3.png";
             if ((this.cos < -1/2) && (this.cos >= -Math.sqrt(3)/2))
-                img.src = "undead%20wave%20start/bulletImage4.png";
+                img.src = "resource/bullet_image/bullet4.png";
             if ((this.cos < -Math.sqrt(3)/2) && (this.cos > -1))
-                img.src = "undead%20wave%20start/bulletImage5.png";
+                img.src = "resource/bullet_image/bullet5.png";
         }
         
         // 3사분면
         if ((this.targetX<0) && (this.targetY>0)) {
             if ((this.cos < 0) && (this.cos >= -1/2))
-                img.src = "undead%20wave%20start/bulletImage7.png";
+                img.src = "resource/bullet_image/bullet7.png";
             if ((this.cos < -1/2) && (this.cos >= -Math.sqrt(3)/2))
-                img.src = "undead%20wave%20start/bulletImage6.png";
+                img.src = "resource/bullet_image/bullet6.png";
             if ((this.cos < -Math.sqrt(3)/2) && (this.cos > -1))
-                img.src = "undead%20wave%20start/bulletImage5.png";
+                img.src = "resource/bullet_image/bullet5.png";
         }
         
         // 4사분면
         if ((this.targetX>0) && (this.targetY>0)) {
             if ((this.cos < 1) && (this.cos >= Math.sqrt(3)/2))
-                img.src = "undead%20wave%20start/bulletImage1.png";
+                img.src = "resource/bullet_image/bullet1.png";
             if ((this.cos < Math.sqrt(3)/2) && (this.cos >= 1/2))
-                img.src = "undead%20wave%20start/bulletImage8.png";
+                img.src = "resource/bullet_image/bullet8.png";
             if ((this.cos < 1/2) && (this.cos > 0))
-                img.src = "undead%20wave%20start/bulletImage7.png";
+                img.src = "resource/bullet_image/bullet7.png";
         }
 
         
         ctx.drawImage(img, this.x, this.y, 25, 25);
-        
     }
 
     static spawnBullet(mouseX, mouseY, x, y, bullets, speed) {

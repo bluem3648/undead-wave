@@ -14,6 +14,13 @@ export class World {
         //맵의 '바탕' (월드 크기만큼)
         ctx.fillStyle = this.backgroundColor;
         ctx.fillRect(0, 0, this.width, this.height);
+
+
+        //맵 배경 이미지 설정
+        const img = new Image();
+        img.src = "undead%20wave%20start/demo2_12.png";
+        ctx.drawImage(img, 0, 0, this.width, this.height);
+
         
         // 맵의 '테두리' (월드 가장자리)
         ctx.strokeStyle = this.borderColor;
