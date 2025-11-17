@@ -9,7 +9,7 @@ export class EnemyManager {
         this.zombies = []; // 일반 좀비 목록
 
         this.bossZombie = null; 
-        this.BOSS_SPAWN_TIME = 3000; // 보스 스폰 시간 (10초) 테스트용
+        this.BOSS_SPAWN_TIME = 30000; // 보스 스폰 시간 (30초) 테스트용
         this.bossSpawned = false;
         this.gameElapsedTime = 0; // 게임 경과 시간 (보스 타이머용)
         this.lastFrameTime = 0; // 보스 타이머의 deltaTime 계산용
@@ -17,6 +17,34 @@ export class EnemyManager {
         // 스폰 설정
         this.SPAWN_INTERVAL = 2000;
         this.lastSpawn = 0;
+
+        //난이도 밸런싱
+        this.difficultyLevel = 1;
+        this.zombieHpMultiplier = 1.0;
+        this.zombieSpeedMultiplier = 1.0;
+        this.zombieDamageMultiplier = 1.0;
+
+        this.bossHpMultiplier = 1.0;
+        this.bossSpeedMultiplier = 1.0;
+        this.bossDamageMultiplier = 1.0;
+    }
+
+    /**
+     * 난이도 조정(보스가 죽었을 때)
+     */
+
+    increaseDifficulty() {
+        this.difficultyLevel++;
+
+        this.SPAWN_INTERVAL = Math.max(500, this.SPAWN_INTERVAL - 100); // 최소 0.5초 간격
+
+        this.zombieHpMultiplier += 1.0;
+        this.zombieSpeedMultiplier += 0.5;
+        this.zombieDamageMultiplier += 1.0;
+
+        this.bossHpMultiplier += 1.0;
+        this.bossSpeedMultiplier += 0.5;
+        this.bossDamageMultiplier += 1.0;
     }
 
     /**
@@ -28,7 +56,11 @@ export class EnemyManager {
         //일반 좀비 스폰
         if (!this.lastSpawn) this.lastSpawn = timestamp;
         if (timestamp - this.lastSpawn >= this.SPAWN_INTERVAL) {
-            Zombie.spawnZombie(this.world, this.zombies);
+            Zombie.spawnZombie(this.world,
+                this.zombies,
+                this.zombieHpMultiplier, 
+                this.zombieSpeedMultiplier, 
+                this.zombieDamageMultiplier);
             this.lastSpawn = timestamp;
         }
 
@@ -48,7 +80,11 @@ export class EnemyManager {
                 bossX = Math.random() < 0.5 ? -100 : this.world.width + 100;
                 bossY = Math.random() * this.world.height;
             }
-            this.bossZombie = new BossZombie(bossX, bossY); 
+            this.bossZombie = new BossZombie(bossX, 
+                bossY, 
+                this.bossHpMultiplier, 
+                this.bossSpeedMultiplier, 
+                this.bossDamageMultiplier); 
             this.bossSpawned = true; // 스폰됨
             console.log("보스 좀비 스폰!");
         }
@@ -74,7 +110,7 @@ export class EnemyManager {
 
             // 충돌 A: 플레이어 vs 좀비
             if (checkCollision(player, zombie)) {
-                if (!player.isInvincible) player.takeDamage(1); // 원본 코드에서는 데미지 1 고정
+                if (!player.isInvincible) player.takeDamage(zombie.damage); // 원본 코드에서는 데미지 1 고정
                 if (player.hp <= 0) playerDied = true;
             }
 
@@ -92,8 +128,7 @@ export class EnemyManager {
                     
                     if (zombie.currentHp <= 0) {
                         // 좀비 사망 처리
-                        const expGained = 1; 
-                        const levelUp = player.getExp(expGained); // 경험치 획득
+                        const levelUp = player.getExp(zombie.expValue); // 경험치 획득
                         if (levelUp) didLevelUp = true; // 레벨업 발생
                         
                         player.score++; // 점수 획득
@@ -111,8 +146,7 @@ export class EnemyManager {
                     zombie.takeDamage(bomb.damage); 
                     if (zombie.currentHp <= 0) {
                         // (폭탄에 죽었을 때도 경험치/점수 처리)
-                        const expGained = 1; 
-                        const levelUp = player.getExp(expGained);
+                        const levelUp = player.getExp(zombie.expValue);
                         if (levelUp) didLevelUp = true;
                         
                         player.score++;
@@ -154,6 +188,8 @@ export class EnemyManager {
                         this.bossZombie = null; 
                         this.bossSpawned = false; 
                         this.gameElapsedTime = 0;
+
+                        this.increaseDifficulty();
                     }
                     
                     weaponManager.removeBullet(bullet); // 총알 제거
@@ -175,6 +211,8 @@ export class EnemyManager {
                         this.bossZombie = null;
                         this.bossSpawned = false;
                         this.gameElapsedTime = 0;
+                        
+                        this.increaseDifficulty();
                         break; // 보스가 죽었으므로 루프 중단
                     }
                 }

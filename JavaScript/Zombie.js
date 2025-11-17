@@ -1,5 +1,5 @@
 export class Zombie {
-    constructor(x, y) {
+    constructor(x, y, hpMultiplier = 1.0, speedMultiplier = 1.0, damageMultiplier = 1.0) {
         // 좀비 크기
         this.width = 40;
         this.height = 40;
@@ -10,9 +10,11 @@ export class Zombie {
         this.y = y;
 
         // 좀비 스테이터스
-        this.speed = 1;
-        this.hp = 3;
+        this.speed = 1 * speedMultiplier;
+        this.hp = 3 * hpMultiplier;
         this.currentHp = this.hp;
+        this.damage = 1 * damageMultiplier;
+        this.expValue = 1; 
 
         // hp바 위치 정보
         this.hpPosL = this.x+3;
@@ -55,7 +57,7 @@ export class Zombie {
     }
 
 
-    static spawnZombie(world, zombies) {
+    static spawnZombie(world, zombies, hpMultiplier = 1.0, speedMultiplier = 1.0, damageMultiplier = 1.0) {
         let x, y;
 
         // 50% 확률로 좌우에서 스폰, 50% 확률로 상하에서 스폰
@@ -67,7 +69,7 @@ export class Zombie {
             y = Math.random() * world.height; 
         }
 
-        const newZombie = new Zombie(x, y);
+        const newZombie = new Zombie(x, y, hpMultiplier, speedMultiplier, damageMultiplier);
 
         zombies.push(newZombie);
     }
