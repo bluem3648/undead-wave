@@ -23,7 +23,7 @@ export class Zombie {
     }
 
     // 좀비 위치 업데이트(플레이어를 따라다녀야함)
-    update(player){
+    update(player, deltaTime, zombies){
         // 방향 계산
         const dx = player.x - this.x;
         const dy = player.y - this.y;
@@ -31,11 +31,40 @@ export class Zombie {
         // 거리 계산(sqrt는 제곱근 , 피타고라스 정리를 이용하여 대각선 거리 구함)
         const distance = Math.sqrt(dx * dx + dy * dy);
 
+        let moveX = 0; 
+        let moveY = 0;
+
         if(distance > 0){ 
             // 방향 / 거리 * 속도 (해당 방향으로 속도만큼 이동)
-            this.x += (dx / distance) * this.speed;
-            this.y += (dy / distance) * this.speed;
+            moveX += (dx / distance) * this.speed;
+            moveY += (dy / distance) * this.speed;
         }
+
+        // 다른 좀비로부터 분리
+        const separationForce = 0.5; //분리 강도
+        const separationRadius = this.width * 1.5; //좀비 크기의 1.5배 크기 반경
+
+        //분리 로직
+        zombies.forEach(otherZombie => {
+            if(otherZombie === this) return;
+
+            const dxToOther = this.x - otherZombie.x;
+            const dyToOther = this.y - otherZombie.y;
+            const distanceToOther = Math.sqrt(dxToOther * dxToOther + dyToOther * dyToOther);
+
+            if(distanceToOther < separationRadius && distanceToOther > 0) {
+                const pushStrength = (separationRadius - distanceToOther) / separationForce;
+
+                moveX += (dxToOther / distanceToOther) * separationForce * pushStrength;
+                moveY += (dyToOther / distanceToOther) * separationForce * pushStrength;
+            }
+        })
+
+        this.x += moveX;
+        this.y += moveY;
+
+        // 좀비 체력바 위치 업데이트
+        this.hpPosL = this.x+3;
     }
 
     draw(ctx) {

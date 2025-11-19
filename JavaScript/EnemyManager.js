@@ -102,11 +102,16 @@ export class EnemyManager {
         let playerDied = false;
         let didLevelUp = false;
 
+        const allZombies = [...this.zombies];
+        if (this.bossZombie) {
+            allZombies.push(this.bossZombie);
+        }
+
         // 일반 좀비 업데이트 및 충돌
         for (let i = this.zombies.length - 1; i >= 0; i--) {
             const zombie = this.zombies[i];
             
-            zombie.update(player); 
+            zombie.update(player, deltaTime, allZombies); 
 
             // 충돌 A: 플레이어 vs 좀비
             if (checkCollision(player, zombie)) {
@@ -158,7 +163,7 @@ export class EnemyManager {
         }
 
         if (this.bossZombie) { // 보스가 존재할 경우에만 실행
-            this.bossZombie.update(player); 
+            this.bossZombie.update(player, deltaTime, allZombies); 
 
             // 충돌 A: 플레이어 vs 보스
             if (checkCollision(player, this.bossZombie)) {
