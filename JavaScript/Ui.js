@@ -47,8 +47,7 @@ export function drawUI(ctx, player, shootMod) {
     let weaponHeight = 100;
     ctx.lineWidth = 2;
 
-    // (이미지 로드는 비효율적이므로, 실제로는 이미지 객체를 미리 로드해두는 것이 좋습니다)
-    // (이 리팩토링에서는 원본 코드의 로직을 그대로 유지합니다)
+    // (이미지 로드는 비효율적이므로, 실제로는 이미지 객체를 미리 로드해두는 것이 좋음)
 
     // - 권총
     drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "권총", "resource/weapon_image/pistol.png", shootMod === "pistol", {x:10, y:10, w:50, h:50});

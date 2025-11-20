@@ -26,12 +26,14 @@ export class BossZombie extends Zombie {
         this.hpBar = this.hpPosR; // HP바의 '최대 너비'를 갱신
     }
 
-    draw(ctx) {
+    draw(ctx, player) {
         // 좀비 몸체 그리기
         // ctx.fillStyle = this.color;
         // ctx.fillRect(this.x, this.y, this.width, this.height);
         const img = new Image();
-        img.src = "undead%20wave%20start/boss-green-idle.gif";
+        //좀비가 플레이어 바라보게 설정
+        if ((player.x-this.x)>=0) img.src = "resource/boss_image/bossRight.png";
+        else img.src = "resource/boss_image/bossLeft.gif";
         ctx.drawImage(img, this.x-10, this.y-10, this.width+25, this.height+25);
 
         // 좀비 체력바 그리기

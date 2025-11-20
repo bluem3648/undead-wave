@@ -37,48 +37,48 @@ export class Bullet {
         }
     }
 
-    draw(ctx) {
+    draw(ctx, bulletImg) {
 
         const img = new Image();
 
         // 1사분면
         if ((this.targetX>=0) && (this.targetY<=0)) {
             if ((this.cos <= 1) && (this.cos >= Math.sqrt(3)/2))
-                img.src = "resource/bullet_image/bullet1.png";
+                img.src = bulletImg[1];
             if ((this.cos < Math.sqrt(3)/2) && (this.cos >= 1/2))
-                img.src = "resource/bullet_image/bullet2.png";
+                img.src = bulletImg[2];
             if ((this.cos < 1/2) && (this.cos >= 0))
-                img.src = "resource/bullet_image/bullet3.png";
+                img.src = bulletImg[3];
         }
 
         // 2사분면
         if ((this.targetX<0) && (this.targetY<0)) {
             if ((this.cos < 0) && (this.cos >= -1/2))
-                img.src = "resource/bullet_image/bullet3.png";
+                img.src = bulletImg[3];
             if ((this.cos < -1/2) && (this.cos >= -Math.sqrt(3)/2))
-                img.src = "resource/bullet_image/bullet4.png";
+                img.src = bulletImg[4];
             if ((this.cos < -Math.sqrt(3)/2) && (this.cos > -1))
-                img.src = "resource/bullet_image/bullet5.png";
+                img.src = bulletImg[5];
         }
         
         // 3사분면
         if ((this.targetX<0) && (this.targetY>0)) {
             if ((this.cos < 0) && (this.cos >= -1/2))
-                img.src = "resource/bullet_image/bullet7.png";
+                img.src =bulletImg[7];
             if ((this.cos < -1/2) && (this.cos >= -Math.sqrt(3)/2))
-                img.src = "resource/bullet_image/bullet6.png";
+                img.src = bulletImg[6];
             if ((this.cos < -Math.sqrt(3)/2) && (this.cos > -1))
-                img.src = "resource/bullet_image/bullet5.png";
+                img.src = bulletImg[5];
         }
         
         // 4사분면
         if ((this.targetX>0) && (this.targetY>0)) {
             if ((this.cos < 1) && (this.cos >= Math.sqrt(3)/2))
-                img.src = "resource/bullet_image/bullet1.png";
+                img.src = bulletImg[1];
             if ((this.cos < Math.sqrt(3)/2) && (this.cos >= 1/2))
-                img.src = "resource/bullet_image/bullet8.png";
+                img.src = bulletImg[8];
             if ((this.cos < 1/2) && (this.cos > 0))
-                img.src = "resource/bullet_image/bullet7.png";
+                img.src = bulletImg[7];
         }
 
         

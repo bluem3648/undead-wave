@@ -10,7 +10,7 @@ export class World {
         this.borderWidth = 10; // 테두리 두께
     }
 
-    draw(ctx) {
+    draw(ctx, worldImg) {
         //맵의 '바탕' (월드 크기만큼)
         ctx.fillStyle = this.backgroundColor;
         ctx.fillRect(0, 0, this.width, this.height);
@@ -18,7 +18,7 @@ export class World {
 
         //맵 배경 이미지 설정
         const img = new Image();
-        img.src = "undead%20wave%20start/demo2_12.png";
+        img.src = worldImg;
         ctx.drawImage(img, 0, 0, this.width, this.height);
 
         

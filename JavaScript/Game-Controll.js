@@ -41,6 +41,31 @@ const enemyManager = new EnemyManager(world);
 const weaponManager = new WeaponManager(player);
 
 
+
+
+//------------이미지 로드------------//
+const zombieImg = [
+    "resource/zombie_image/zombieRight.png",
+     "resource/zombie_image/zombieLeft.png"
+]
+
+const bulletImg = [
+    "",
+    "resource/bullet_image/bullet1.png",
+    "resource/bullet_image/bullet2.png",
+    "resource/bullet_image/bullet3.png",
+    "resource/bullet_image/bullet4.png",
+    "resource/bullet_image/bullet5.png",
+    "resource/bullet_image/bullet6.png",
+    "resource/bullet_image/bullet7.png",
+    "resource/bullet_image/bullet8.png"
+]
+
+const worldImg = "undead%20wave%20start/demo2_12.png"
+
+
+
+
 //------------키 설정------------//
 
 // 키 상태 저장 객체
@@ -174,10 +199,10 @@ function update(timestamp) {
     ctx.translate(cameraX, cameraY);
 
     // 그리기
-    world.draw(ctx);
-    player.draw(ctx); 
-    enemyManager.draw(ctx);
-    weaponManager.draw(ctx);
+    world.draw(ctx, worldImg);
+    player.draw(ctx, keys); 
+    enemyManager.draw(ctx, player, zombieImg);
+    weaponManager.draw(ctx, bulletImg);
 
 
     //카메라 변환 해제
@@ -201,10 +226,10 @@ function drawPausedGame(ctx) {
     ctx.save();
     ctx.translate(cameraX, cameraY);
     // (업데이트 없이 그리기만 호출)
-    world.draw(ctx);
-    player.draw(ctx);
-    enemyManager.draw(ctx);
-    weaponManager.draw(ctx);
+    world.draw(ctx, worldImg);
+    player.draw(ctx, keys);
+    enemyManager.draw(ctx, player, zombieImg);
+    weaponManager.draw(ctx, bulletImg);
     ctx.restore();
 }
 

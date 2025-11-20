@@ -124,8 +124,8 @@ export class WeaponManager {
      * 모든 총알과 폭탄을 캔버스에 그립니다.
      * @param {CanvasRenderingContext2D} ctx - 2D 그리기 도구
      */
-    draw(ctx) {
-        this.bullets.forEach(bullet => bullet.draw(ctx));
+    draw(ctx, bulletImg) {
+        this.bullets.forEach(bullet => bullet.draw(ctx, bulletImg));
         this.bombs.forEach(bomb => bomb.draw(ctx));
     }
     

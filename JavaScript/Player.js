@@ -64,16 +64,22 @@ export class Player{
     }
 
     // draw 플레이어 그리기
-    draw(ctx) {
+    draw(ctx, keys) {
 
+        if (keys.d) this.key = "d"
+        if (keys.a) this.key = "a"
         const img = new Image();
-        img.src = "undead%20wave%20start/idle.gif";
+
+        //플레이어 캐릭터가 이동 방향 바라보게
+        if (this.key == "d") img.src = "resource/player_image/idleRight.gif";
+        else if (this.key == "a") img.src = "resource/player_image/idleLeft.png";
+        else img.src = "resource/player_image/idleRight.gif";
 
         if (this.isInvincible) {
-            img.src = "undead%20wave%20start/hurt.gif";
+            img.src = "resource/player_image/hurt.gif";
 
             // 무적일 때 잠깐 안 보이게 (깜빡임 효과)
-            if (Math.floor(this.invincibilityTimer / 100) % 2 === 0)
+            if (Math.floor(this.ianvincibilityTimer / 100) % 2 === 0)
                 return;     
         }
 
