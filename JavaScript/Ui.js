@@ -4,7 +4,7 @@
  * @param {Player} player - 플레이어 객체 (정보 표시용)
  * @param {string} shootMod - 현재 선택된 무기 모드
  */
-export function drawUI(ctx, player, shootMod) {
+export function drawUI(ctx, player, shootMod, partsNum) {
 
     // // --- 1. HP 및 방어력 텍스트 ---
     // ctx.fillStyle = 'white';
@@ -57,15 +57,36 @@ export function drawUI(ctx, player, shootMod) {
     
     // - 샷건
     weaponX += weaponWidth + 10;
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "샷건", "resource/weapon_image/shotgun.png", shootMod === "shotgun", {x:10, y:0, w:50, h:80});
+    if (partsNum>=20)
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "샷건", "resource/weapon_image/shotgun.png", shootMod === "shotgun", {x:10, y:0, w:50, h:80});
+    else
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "20X", "resource/weapon_image/parts.png", shootMod === "shotgun", {x:5, y:0, w:60, h:80});
 
     // - 라이플
     weaponX += weaponWidth + 10;
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "라이플", "resource/weapon_image/rifle.png", shootMod === "rifle", {x:10, y:-10, w:50, h:100});
+    if (partsNum>=50)
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "라이플", "resource/weapon_image/rifle.png", shootMod === "rifle", {x:10, y:-10, w:50, h:100});
+    else
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "50X", "resource/weapon_image/parts.png", shootMod === "rifle", {x:5, y:0, w:60, h:80});
 
     // - 폭탄
     weaponX += weaponWidth + 10;
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "폭탄", "resource/weapon_image/Bomb.png", shootMod === "bomb", {x:10, y:10, w:50, h:50});
+    if (partsNum>=100)
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "폭탄", "resource/weapon_image/Bomb.png", shootMod === "bomb", {x:10, y:10, w:50, h:50});
+    else 
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "100X", "resource/weapon_image/parts.png", shootMod === "bomb", {x:5, y:0, w:60, h:80});
+    
+
+
+    // --- 5. 부품 정보 ---
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 20px Arial';
+    ctx.fillText(`: ${partsNum}`, 410, 66);
+
+    const partsImg = new Image();
+    partsImg.src =  "resource/weapon_image/parts.png";
+    ctx.drawImage(partsImg, 350, 30, 60, 60);
 }
 
 /**

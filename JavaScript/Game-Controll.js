@@ -4,6 +4,8 @@ import { World } from './World.js';
 import { drawUI, drawGameOverScreen, drawUpgradeOptions, calculateUpgradeOptionBounds } from './UI.js';
 import { EnemyManager } from './EnemyManager.js';
 import { WeaponManager } from './WeaponManager.js';
+import { Parts } from './Parts.js';
+import { PartsManager } from './PartsManager.js';
 
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
@@ -39,6 +41,7 @@ const world = new World(3000, 3000);
 const player = new Player(world.width, world.height);
 const enemyManager = new EnemyManager(world);
 const weaponManager = new WeaponManager(player);
+const partsManager = new PartsManager();
 
 
 
@@ -85,9 +88,15 @@ document.addEventListener('keydown', function(event) {
     
     // 총 모드 전환
     if (key == "1") weaponManager.setWeapon("pistol");
-    if (key == "2") weaponManager.setWeapon("shotgun");
-    if (key == "3") weaponManager.setWeapon("rifle"); 
-    if (key == "4") weaponManager.setWeapon("bomb");
+    if (key == "2") 
+        if (partsManager.num>=20) 
+            weaponManager.setWeapon("shotgun");
+    if (key == "3") 
+        if (partsManager.num>=50)
+            weaponManager.setWeapon("rifle");
+    if (key == "4") 
+        if (partsManager.num>=100)
+            weaponManager.setWeapon("bomb");
 
 
     if (key in keys) {
@@ -170,9 +179,10 @@ function update(timestamp) {
     player.update(keys, world, deltaTime);
     enemyManager.updateSpawning(timestamp);
     weaponManager.update(timestamp, mouseX, mouseY, world);
+    partsManager.updateAndCollide(player);
 
     //충돌 처리 로직
-    const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime);
+    const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime, partsManager);
     
     if (collisionResults.playerDied) {
         currentState = GAME_STATE.GAMEOVER;
@@ -203,12 +213,13 @@ function update(timestamp) {
     player.draw(ctx, keys); 
     enemyManager.draw(ctx, player, zombieImg);
     weaponManager.draw(ctx, bulletImg);
+    partsManager.draw(ctx);
 
 
     //카메라 변환 해제
     ctx.restore();
 
-    drawUI(ctx, player, weaponManager.shootMod);
+    drawUI(ctx, player, weaponManager.shootMod, partsManager.num);
 
     requestAnimationFrame(update);
 }

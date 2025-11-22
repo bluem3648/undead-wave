@@ -1,6 +1,7 @@
 import { Zombie } from './Zombie.js';
 import { checkCollision } from './Utils.js'; 
 import { BossZombie } from './BossZombie.js';
+import { PartsManager } from './PartsManager.js';
 
 
 export class EnemyManager {
@@ -98,7 +99,7 @@ export class EnemyManager {
      * @returns {object} - { playerDied: boolean, didLevelUp: boolean } 게임 상태 변경 여부
      */
 
-    updateAndCollide(player, weaponManager, deltaTime) {
+    updateAndCollide(player, weaponManager, deltaTime, partsManager) {
         let playerDied = false;
         let didLevelUp = false;
 
@@ -137,6 +138,7 @@ export class EnemyManager {
                         if (levelUp) didLevelUp = true; // 레벨업 발생
                         
                         player.score++; // 점수 획득
+                        partsManager.spawnParts(this.zombies[i].x, this.zombies[i].y); //부품 생성
                         this.zombies.splice(i, 1); // 좀비 제거
                     }
                     
@@ -155,6 +157,7 @@ export class EnemyManager {
                         if (levelUp) didLevelUp = true;
                         
                         player.score++;
+                        partsManager.spawnParts(this.zombies[i].x, this.zombies[i].y); //부품 생성
                         this.zombies.splice(i, 1); // 좀비 제거
                         break; 
                     }
