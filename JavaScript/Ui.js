@@ -5,44 +5,47 @@
  * @param {string} shootMod - 현재 선택된 무기 모드
  */
 export function drawUI(ctx, player, shootMod) {
-    // --- 1. HP 및 방어력 텍스트 ---
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'left';
 
-    let hpText = `HP: ${player.hp}/${player.maxHp}`;
-    if (player.defense >= 1) { // 방어력이 1 이상일 때만 표시
-        hpText += ` | DEF: ${player.defense}`;
-    }
-    ctx.fillText(hpText, 10, 30);
+    // // --- 1. HP 및 방어력 텍스트 ---
+    // ctx.fillStyle = 'white';
+    // ctx.font = '20px Arial';
+    // ctx.textAlign = 'left';
+
+    // let hpText = `HP: ${player.hp} / ${player.maxHp}`;
+    // if (player.defense >= 1) { // 방어력이 1 이상일 때만 표시
+    //     hpText += ` | DEF: ${player.defense}`;
+    // }
+
+    // ctx.fillText(hpText, 10, 30);
 
     // --- 2. 경험치 바 ---
-    const barWidth = 200;
+    const barWidth = window.innerWidth-2;
     const barHeight = 20;
-    const barX = 10;
-    const barY = 50;
+    const barX = 1;
+    const barY = 1;
     const expRatio = player.exp / player.expToNextLevel; // 현재 경험치 비율 (0.0 ~ 1.0)
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // 바 배경
     ctx.fillRect(barX, barY, barWidth, barHeight);
     ctx.fillStyle = 'gold'; // 채워진 경험치
     ctx.fillRect(barX, barY, barWidth * expRatio, barHeight);
-    ctx.strokeStyle = 'white'; // 테두리
+    ctx.strokeStyle = 'black'; // 테두리
     ctx.lineWidth = 2;
     ctx.strokeRect(barX, barY, barWidth, barHeight);
 
     // --- 3. 레벨 및 경험치 텍스트 ---
     ctx.fillStyle = 'white';
     ctx.textAlign = 'left';
-    ctx.font = '16px Arial';
-    ctx.fillText(
-        `Lv. ${player.level} - EXP: ${player.exp} / ${player.expToNextLevel}`, 
-        barX + barWidth + 10, barY + 15
-    );
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText(`LV ${player.level}`, window.innerWidth-60, 17);
+    // ctx.fillText(
+    //     `Lv. ${player.level} - EXP: ${player.exp} / ${player.expToNextLevel}`, 
+    //     barX + barWidth + 10, barY + 15
+    // );
 
     // --- 4. 무기 선택창 ---
-    let weaponX = 400;
-    let weaponY = 10;
+    let weaponX = 10;
+    let weaponY = 30;
     let weaponWidth = 70;
     let weaponHeight = 100;
     ctx.lineWidth = 2;

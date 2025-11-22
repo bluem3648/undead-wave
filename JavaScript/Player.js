@@ -66,8 +66,8 @@ export class Player{
     // draw 플레이어 그리기
     draw(ctx, keys) {
 
-        if (keys.d) this.key = "d"
-        if (keys.a) this.key = "a"
+        if (keys.d || keys.ㅇ) this.key = "d"
+        if (keys.a || keys.ㅁ) this.key = "a"
         const img = new Image();
 
         //플레이어 캐릭터가 이동 방향 바라보게
@@ -83,10 +83,39 @@ export class Player{
                 return;     
         }
 
+        // 히트박스 크기 (확인용이라 주석처리)
         // ctx.fillStyle = this.color;
         // ctx.fillRect(this.x, this.y, this.width, this.height);
             
-        ctx.drawImage(img, this.x, this.y-10, this.width+20, this.height+20);
+        // 캐릭터 이미지 그리기
+        if (this.key == "d") ctx.drawImage(img, this.x, this.y-10, this.width+20, this.height+20);
+        else if (this.key == "a") ctx.drawImage(img, this.x-20, this.y-10, this.width+20, this.height+20);
+        else ctx.drawImage(img, this.x, this.y-10, this.width+20, this.height+20);
+
+
+
+
+        // 체력바 크기 설정
+        const barWidth = this.width + 10;
+        const barHeight = 6;
+
+        //체력바 위치 설정
+        const hpBarX = this.x-5;
+        const hpBarY = this.y+this.height+15;
+
+        // 체력바 배경 그리기
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; 
+        ctx.fillRect(hpBarX, hpBarY, barWidth, barHeight);
+
+        // 남아있는 체력 그리기
+        ctx.fillStyle = 'red'; 
+        ctx.fillRect(hpBarX, hpBarY, barWidth * (this.hp/this.maxHp), barHeight);
+        ctx.strokeStyle = 'black'; 
+        
+        // 체력바 테두리 그리기 
+        ctx.lineWidth = 2;
+        ctx.strokeRect(hpBarX, hpBarY, barWidth, barHeight);
+
     }
 
     // 데미지 입는 함수
@@ -97,6 +126,8 @@ export class Player{
             } else {
                 this.hp -= amount; 
             }
+
+            if (this.hp<0) this.hp = 0; 
 
             this.isInvincible = true;
             this.invincibilityTimer = 0;
