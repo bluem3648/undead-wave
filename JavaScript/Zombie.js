@@ -77,7 +77,10 @@ export class Zombie {
         if ((player.x-this.x)>=0) img.src = zombieImg[0];
         else img.src = zombieImg[1];
 
-        ctx.drawImage(img, this.x-10, this.y-10, this.width+25, this.height+25);
+        //ctx.drawImage(img, this.x-10, this.y-10, this.width+25, this.height+25);
+        if ((player.x-this.x)>=0) ctx.drawImage(img, this.x-10+2, this.y-10, this.width+25, this.height+25);
+        else ctx.drawImage(img, this.x-10-5, this.y-10, this.width+25, this.height+25);
+
 
         // 좀비 체력바 그리기
         this.hpPosL = this.x+3;
