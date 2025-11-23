@@ -116,7 +116,7 @@ export class EnemyManager {
 
             // 충돌 A: 플레이어 vs 좀비
             if (checkCollision(player, zombie)) {
-                if (!player.isInvincible) player.takeDamage(zombie.damage); // 원본 코드에서는 데미지 1 고정
+                if (!player.isInvincible) player.takeDamage(zombie.damage);
                 if (player.hp <= 0) playerDied = true;
             }
 

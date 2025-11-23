@@ -1,3 +1,4 @@
+import { roundRect } from './Utils.js'; 
 /**
  * 메인 게임 UI (HP, 방어력, 경험치 바, 레벨, 무기 슬롯)를 그립니다.
  * @param {CanvasRenderingContext2D} ctx - 2D 그리기 도구
@@ -189,4 +190,67 @@ export function drawUpgradeOptions(ctx, canvas, options) {
         ctx.fillStyle = '#bdc3c7';
         ctx.fillText(option.description, x + width / 2, y + 100);
     }
+}
+
+
+
+
+
+export function statUI(isSpace, ctx, player) {
+
+    
+
+    const barWidth = window.innerWidth * 1/3;
+    const barHeight = window.innerHeight * 1/2;
+    const barX = window.innerWidth/3;
+    const barY = window.innerHeight * 1/4; 
+
+    const imgHp = new Image();
+    const imgAtk = new Image();
+    const imgDef = new Image();
+    const imgLv = new Image();
+    const imgExp = new Image();
+    const imgSpeed = new Image();
+    imgHp.src = "resource/stat_image/hp.png";
+    imgAtk.src = "resource/stat_image/atk.png";
+    imgDef.src = "resource/stat_image/def.png";
+    imgLv.src = "resource/stat_image/lv.png";
+    imgExp.src = "resource/stat_image/exp.png";
+    imgSpeed.src = "resource/stat_image/speed.png";
+
+    if (isSpace) 
+    {   
+        // 배경
+        // ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; 
+        // ctx.fillRect(barX, barY, barWidth, barHeight);
+        roundRect(ctx, barX, barY, barWidth, barHeight, 20);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; 
+        ctx.fill();
+
+
+        // 이미지 
+        ctx.drawImage(imgHp, barX+180, barY+50, 55, 55); 
+        ctx.drawImage(imgAtk, barX+175, barY+100, 65, 65); 
+        ctx.drawImage(imgDef, barX+180, barY+157, 55, 50);     
+        ctx.drawImage(imgLv, barX+182, barY+215, 50, 50);
+        ctx.drawImage(imgExp, barX+182, barY+270, 50, 50);
+        ctx.drawImage(imgSpeed, barX+170, barY+312, 65, 65); 
+
+ 
+        // 텍스트
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+        ctx.font = 'bold 16px Arial';
+        ctx.fillText(`${player.hp} / ${player.maxHp}`, barX+250, barY+80);
+        ctx.fillText(`   `, barX+250, barY+80);
+        ctx.fillText(`${player.defense}`, barX+250, barY+190);
+        ctx.fillText(`Lv ${player.level}`, barX+250, barY+245);
+        ctx.fillText(`${player.exp} / ${player.expToNextLevel}`, barX+250, barY+300);
+        ctx.fillText(`${player.speed}`, barX+250, barY+353);
+
+
+        
+    }
+    
+
 }

@@ -1,7 +1,7 @@
 //------------기본 설정------------//
 import { Player } from './Player.js';;
 import { World } from './World.js';
-import { drawUI, drawGameOverScreen, drawUpgradeOptions, calculateUpgradeOptionBounds } from './UI.js';
+import { drawUI, drawGameOverScreen, drawUpgradeOptions, calculateUpgradeOptionBounds, statUI } from './UI.js';
 import { EnemyManager } from './EnemyManager.js';
 import { WeaponManager } from './WeaponManager.js';
 import { Parts } from './Parts.js';
@@ -83,6 +83,8 @@ const keys = {
     ㅈ: false
 };
 
+let isSpace = false;
+
 document.addEventListener('keydown', function(event) {
     const key = event.key.toLowerCase();
     
@@ -97,6 +99,10 @@ document.addEventListener('keydown', function(event) {
     if (key == "4") 
         if (partsManager.num>=100)
             weaponManager.setWeapon("bomb");
+
+    // 스탯창 띄우기
+    if (key === ' ' || key === 'space')
+        isSpace = !(isSpace);
 
 
     if (key in keys) {
@@ -220,6 +226,7 @@ function update(timestamp) {
     ctx.restore();
 
     drawUI(ctx, player, weaponManager.shootMod, partsManager.num);
+    statUI(isSpace, ctx, player);
 
     requestAnimationFrame(update);
 }
