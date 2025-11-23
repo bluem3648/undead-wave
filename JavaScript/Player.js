@@ -42,7 +42,7 @@ export class Player{
         this.backstepSpeed = 10; // 백스텝 시 증가하는 속도 (기본 속도에 더해짐)
         this.isBackstepping = false;   // 백스텝 중인지 여부
         this.backstepDuration = 200; // 백스텝 지속 시간
-        this.backstepCooldown = 1000; // 백스텝 쿨타임
+        this.backstepCooldown = 25000; // 백스텝 쿨타임
         this.backstepCooldownTimer = 0; // 백스텝 쿨타임 타이머
         this.lastBackstepDirection = { x: 0, y: 0 }; // 마지막 이동 방향
 
