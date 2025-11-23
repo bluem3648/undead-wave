@@ -64,6 +64,16 @@ document.addEventListener('keydown', function(event) {
     if (key == "3") weaponManager.setWeapon("rifle"); 
     if (key == "4") weaponManager.setWeapon("bomb");
 
+    // 스킬 사용
+    if (event.key === 'Shift') {
+        player.startRoll();
+    }
+    if (event.key === 'e') {
+        weaponManager.castRay(Date.now());
+    }
+    if (event.key === 'q') {
+        if (player.startbackstep()) weaponManager.castCone();
+    }
 
     if (key in keys) {
         keys[key] = true;
@@ -142,12 +152,12 @@ function update(timestamp) {
     clearCanvas();
 
     // 플레이어, 적 스폰, 무기 업데이트
-    player.update(keys, world, deltaTime);
+    player.update(keys, world, deltaTime, timestamp);
     enemyManager.updateSpawning(timestamp);
     weaponManager.update(timestamp, mouseX, mouseY, world);
 
     //충돌 처리 로직
-    const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime);
+    const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime, timestamp);
     
     if (collisionResults.playerDied) {
         currentState = GAME_STATE.GAMEOVER;

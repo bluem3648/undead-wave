@@ -1,5 +1,8 @@
 import { Bullet } from './Bullet.js';
 import { Bomb } from './Bomb.js';
+import { checkCollision } from './Utils.js'; // 충돌 체크 함수
+import { Ray } from './Ray.js';
+import { ConeAttack } from './ConeAttack.js';
 
 // 무기(총알, 폭탄)와 관련된 모든 것을 관리하는 클래스
 export class WeaponManager {
@@ -7,9 +10,15 @@ export class WeaponManager {
         this.player = player;
         this.bullets = []; // 현재 활성화된 모든 총알 목록
         this.bombs = [];   // 현재 활성화된 모든 폭탄 목록
+        this.rays = [];    // 현재 활성화된 모든 광선 목록
+        this.coneAttacks = []; // 현재 활성화된 부채꼴 공격 목록
 
         this.shootMod = "pistol"; // 현재 무기 모드
         this.shootTime = 0;       // 마지막 발사 시간 (쿨다운 계산용)
+
+        // 광선 스킬 쿨다운
+        this.RAY_COOLDOWN = 40000; // 광선 스킬 쿨다운 (40초)
+        this.lastRayTime = 0;     // 마지막 광선 발사 시간
     }
 
     /**
@@ -20,6 +29,34 @@ export class WeaponManager {
         this.shootMod = mod;
     }
 
+    // 광선 스킬 발동 요청 함수
+    castRay(timestamp) {
+        // 쿨다운 체크
+        if (timestamp - this.lastRayTime < this.RAY_COOLDOWN) {
+            return;
+        }
+
+        // 플레이어에게 광선 발사 방향을 요청
+        const direction = this.player.startRay();
+
+        // 광선 생성 및 배열에 추가
+        const newRay = new Ray(this.player, direction);
+        this.rays.push(newRay);
+        
+        // 쿨다운 타이머 업데이트
+        this.lastRayTime = timestamp;
+    }
+
+    // 부채꼴 공격 발동 요청 함수
+    castCone() {
+        // 플레이어에게 부채꼴 공격 방향을 요청
+        const direction = this.player.startCone();
+
+        // 부채꼴 공격 생성 및 배열에 추가
+        const newCone = new ConeAttack(this.player, direction);
+        this.coneAttacks.push(newCone);
+    }
+
     /**
      * 매 프레임 호출되어 무기 발사 및 업데이트를 처리합니다.
      * @param {number} timestamp - 현재 시간
@@ -28,6 +65,8 @@ export class WeaponManager {
      * @param {World} world - 월드 객체 (경계 체크용)
      */
     update(timestamp, mouseX, mouseY, world) {
+        const now = Date.now();
+
         // --- 1. 무기 발사 (쿨다운 체크) ---
         let timer = 0;
         switch (this.shootMod) {
@@ -66,6 +105,23 @@ export class WeaponManager {
             if (!bomb.spawnTime) bomb.spawnTime = timestamp;
             if (timestamp - bomb.spawnTime >= 200) {
                 this.bombs.splice(i, 1);
+            }
+        }
+
+        // 4. 광선 업데이트 및 제거
+        for (let i = this.rays.length - 1; i >= 0; i--) {
+            const ray = this.rays[i];
+            if (ray.update(now)) {
+                this.rays.splice(i, 1);
+            }
+        }
+
+        // 5. 부채꼴 공격 업데이트 및 제거
+        for (let i = this.coneAttacks.length - 1; i >= 0; i--) {
+            const cone = this.coneAttacks[i];
+            const isFinished = cone.update(now);
+            if (isFinished) {
+                this.coneAttacks.splice(i, 1);
             }
         }
     }
@@ -127,6 +183,8 @@ export class WeaponManager {
     draw(ctx) {
         this.bullets.forEach(bullet => bullet.draw(ctx));
         this.bombs.forEach(bomb => bomb.draw(ctx));
+        this.rays.forEach(ray => ray.draw(ctx));
+        this.coneAttacks.forEach(cone => cone.draw(ctx));
     }
     
     /**
@@ -147,5 +205,42 @@ export class WeaponManager {
         if (index > -1) {
             this.bombs.splice(index, 1);
         }
+    }
+
+    // 광선과 좀비의 충돌 체크 및 데미지 적용 함수
+    checkRayHit(entity) {
+        let hit = false;
+        
+        for (const ray of this.rays) {
+            // 이미 이 광선에 맞은 좀비는 건너뜁니다.
+            if (ray.hitZombies.has(entity)) {
+                continue;
+            }
+
+            if (checkCollision(ray, entity)) {
+                // 충돌 발생: 데미지 적용
+                entity.takeDamage(ray.damage); 
+                
+                // 광선에 맞았음을 기록하여 중복 데미지를 방지
+                ray.hitZombies.add(entity);
+                hit = true;
+            }
+        }
+        return hit;
+    }
+
+    // 부채꼴 공격과 좀비/보스의 충돌 확인 및 데미지 적용
+    checkConeAttackHit(entity) {
+        let hit = false;
+
+        this.coneAttacks.forEach(cone => {
+            // ConeAttack은 1회성 공격이므로, 이미 맞은 적은 재공격하지 않습니다.
+            if (checkCollision(cone, entity) && !cone.hitEnemies.has(entity)) {
+                entity.takeDamage(cone.damage);
+                cone.hitEnemies.add(entity); // 맞은 적 기록 (중복 히트 방지)
+                hit = true;
+            }
+        });
+        return hit; // 충돌 발생 여부 반환
     }
 }

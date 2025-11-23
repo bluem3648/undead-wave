@@ -98,7 +98,7 @@ export class EnemyManager {
      * @returns {object} - { playerDied: boolean, didLevelUp: boolean } 게임 상태 변경 여부
      */
 
-    updateAndCollide(player, weaponManager, deltaTime) {
+    updateAndCollide(player, weaponManager, deltaTime, timestamp) {
         let playerDied = false;
         let didLevelUp = false;
 
@@ -115,8 +115,9 @@ export class EnemyManager {
 
             // 충돌 A: 플레이어 vs 좀비
             if (checkCollision(player, zombie)) {
-                if (!player.isInvincible) player.takeDamage(zombie.damage); // 원본 코드에서는 데미지 1 고정
+                if (!player.isInvincible) player.takeDamage(zombie.damage, timestamp); // 원본 코드에서는 데미지 1 고정
                 if (player.hp <= 0) playerDied = true;
+                break;
             }
 
             // 충돌 B: 총알 vs 좀비
@@ -160,6 +161,32 @@ export class EnemyManager {
                     }
                 }
             }
+
+            // 충돌 D: 광선 vs 일반 좀비
+            if (weaponManager.checkRayHit(zombie)) {
+                if (zombie.currentHp <= 0) {
+                    // 좀비 사망 처리
+                    const levelUp = player.getExp(zombie.expValue); // 경험치 획득
+                    if (levelUp) didLevelUp = true; // 레벨업 발생
+                    
+                    player.score++; // 점수 획득
+                    this.zombies.splice(i, 1); // 좀비 제거
+                    break;
+                }
+            }
+
+            // 충돌 E: 부채꼴 공격 vs 좀비
+            if (weaponManager.checkConeAttackHit(zombie)) {
+                if (zombie.currentHp <= 0) {
+                    // 좀비 사망 처리
+                    const levelUp = player.getExp(zombie.expValue); // 경험치 획득
+                    if (levelUp) didLevelUp = true; // 레벨업 발생
+                    
+                    player.score++; // 점수 획득
+                    this.zombies.splice(i, 1); // 좀비 제거
+                    break;
+                }
+            }
         }
 
         if (this.bossZombie) { // 보스가 존재할 경우에만 실행
@@ -167,8 +194,9 @@ export class EnemyManager {
 
             // 충돌 A: 플레이어 vs 보스
             if (checkCollision(player, this.bossZombie)) {
-                if (!player.isInvincible) player.takeDamage(this.bossZombie.damage); 
+                if (!player.isInvincible) player.takeDamage(this.bossZombie.damage, timestamp); 
                 if (player.hp <= 0) playerDied = true;
+                return { playerDied, didLevelUp };
             }
 
             // 충돌 B: 총알 vs 보스
@@ -184,6 +212,11 @@ export class EnemyManager {
                     this.bossZombie.takeDamage(damage); 
                     
                     if (this.bossZombie.currentHp <= 0) {
+                        // 스킬 잠금 해제 카운트
+                        player.bossesKilled++; 
+                        player.checkRayUnlock();
+                        player.checkBackstepUnlock();
+
                         // 보스 사망 처리
                         const expGained = this.bossZombie.expValue; // 보스 경험치
                         const levelUp = player.getExp(expGained);
@@ -207,6 +240,10 @@ export class EnemyManager {
                 if(checkCollision(bomb, this.bossZombie)) {
                     this.bossZombie.takeDamage(bomb.damage); 
                     if (this.bossZombie.currentHp <= 0) {
+                        // 스킬 잠금 해제 카운트
+                        player.bossesKilled++; 
+                        player.checkRayUnlock();
+                        player.checkBackstepUnlock();
                        
                         const expGained = this.bossZombie.expValue || 10;
                         const levelUp = player.getExp(expGained);
@@ -220,6 +257,48 @@ export class EnemyManager {
                         this.increaseDifficulty();
                         break; // 보스가 죽었으므로 루프 중단
                     }
+                }
+            }
+
+            // 충돌 D: 광선 vs 보스 좀비
+            if (weaponManager.checkRayHit(this.bossZombie)) {
+                if (this.bossZombie.currentHp <= 0) {
+                    // 스킬 잠금 해제 카운트
+                    player.bossesKilled++; 
+                    player.checkRayUnlock();
+                    player.checkBackstepUnlock();
+
+                    const expGained = this.bossZombie.expValue || 10;
+                    const levelUp = player.getExp(expGained);
+                    if (levelUp) didLevelUp = true;
+                    
+                    player.score += 100;
+                    this.bossZombie = null;
+                    this.bossSpawned = false;
+                    this.gameElapsedTime = 0;
+                    
+                    this.increaseDifficulty();
+                }
+            }
+
+            // 충돌 E: 부채꼴 공격 vs 보스 좀비
+            if (weaponManager.checkConeAttackHit(this.bossZombie)) {
+                if (this.bossZombie.currentHp <= 0) {
+                    // 스킬 잠금 해제 카운트
+                    player.bossesKilled++; 
+                    player.checkRayUnlock();
+                    player.checkBackstepUnlock();
+                    
+                    const expGained = this.bossZombie.expValue || 10;
+                    const levelUp = player.getExp(expGained);
+                    if (levelUp) didLevelUp = true;
+                    
+                    player.score += 100;
+                    this.bossZombie = null;
+                    this.bossSpawned = false;
+                    this.gameElapsedTime = 0;
+                    
+                    this.increaseDifficulty();
                 }
             }
         }
