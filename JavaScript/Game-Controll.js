@@ -104,6 +104,16 @@ document.addEventListener('keydown', function(event) {
     if (key === ' ' || key === 'space')
         isSpace = !(isSpace);
 
+    // 스킬 사용
+    if (event.key === 'Shift') {
+        player.startRoll();
+    }
+    if (event.key === 'e') {
+        weaponManager.castRay(Date.now());
+    }
+    if (event.key === 'q') {
+        if (player.startbackstep()) weaponManager.castCone();
+    }
 
     if (key in keys) {
         keys[key] = true;
@@ -182,13 +192,13 @@ function update(timestamp) {
     clearCanvas();
 
     // 플레이어, 적 스폰, 무기 업데이트
-    player.update(keys, world, deltaTime);
+    player.update(keys, world, deltaTime, timestamp);
     enemyManager.updateSpawning(timestamp);
     weaponManager.update(timestamp, mouseX, mouseY, world);
     partsManager.updateAndCollide(player);
 
     //충돌 처리 로직
-    const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime, partsManager);
+    const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime, partsManager, timestamp);
     
     if (collisionResults.playerDied) {
         currentState = GAME_STATE.GAMEOVER;
