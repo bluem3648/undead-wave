@@ -148,14 +148,32 @@ section img#zombie{
 .space{
   margin-left:65px
 }
-.wasd1{
-  width: 300px;
-  height: 150px;
+#mov > div {
+  display: inline-block;
+  vertical-align: middle; /* 垂直对齐 */
+  margin-right: 100px; /* 右边距 */
 }
-.wasd2{
-  position: relative;
-  left:300px;
+
+#mov > div:last-child {
+  margin-right: 0; /* 最后一个div去掉右边距 */
+}
+
+#mov > div:last-child img {
+  animation: squareWalk 5s linear infinite;
+}
+
+@keyframes squareWalk {
+  0% {
+    transform: translateX(0) ;
+  }
+  50% {
+    transform: translateX(300px)  ; /* 右 */
+  }
+  55%{
+    transform: scaleX(-1)translateX(-300px);
+  }
+  100% {
+    transform: translateX(0)  scaleX(-1); /* 左 */
+  }
   
 }
-
-
