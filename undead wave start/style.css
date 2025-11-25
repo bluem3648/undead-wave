@@ -144,3 +144,18 @@ section img#zombie{
   font-size: 1em;
   color: #fff;
 }
+
+.space{
+  margin-left:65px
+}
+.wasd1{
+  width: 300px;
+  height: 150px;
+}
+.wasd2{
+  position: relative;
+  left:300px;
+  
+}
+
+
