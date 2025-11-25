@@ -15,6 +15,8 @@ export class Player{
         this.maxHp = 4;
         this.hp = this.maxHp;
         this.defense = 0;
+        this.damageLv = 1;
+        this.damage = this.damageLv * 0.5 + 0.5;
 
         // 일반 공격력 (백스텝 공격 데미지 계산용)
         this.lastAttackDamage = 1;
@@ -33,12 +35,12 @@ export class Player{
         this.lastRollDirection = { x: 0, y: 0 }; // 마지막 이동 방향
 
         // 광선 스킬 관련 변수
-        this.rayUnlocked = false; // 광선 스킬 잠금 해제 여부
+        this.rayUnlocked = true; // 광선 스킬 잠금 해제 여부
         this.bossesKilled = 0;    // 처치한 보스 수 카운터
         this.lastMoveDirection = { x: 0, y: 0 }; // 마지막 이동 방향 벡터
 
         // 백스텝 스킬 관련 변수
-        this.backstepUnlocked = false; // 백스텝 스킬 잠금 해제 여부
+        this.backstepUnlocked = true; // 백스텝 스킬 잠금 해제 여부
         this.backstepSpeed = 10; // 백스텝 시 증가하는 속도 (기본 속도에 더해짐)
         this.isBackstepping = false;   // 백스텝 중인지 여부
         this.backstepDuration = 200; // 백스텝 지속 시간
@@ -328,7 +330,8 @@ export class Player{
                 name: "공격력 향상", 
                 description: "공격력 +1", 
                 effect: () => { 
-                    // this.attackDamage += 1; // 추후 공격력 변수 추가 시
+                    this.damageLv += 1; // 추후 공격력 변수 추가 시
+                    this.damage = this.damageLv * 0.5 + 0.5;
                 } 
             },
             { 

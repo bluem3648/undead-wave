@@ -242,7 +242,7 @@ export function statUI(isSpace, ctx, player) {
         ctx.textAlign = 'left';
         ctx.font = 'bold 16px Arial';
         ctx.fillText(`${player.hp} / ${player.maxHp}`, barX+250, barY+80);
-        ctx.fillText(`   `, barX+250, barY+80);
+        ctx.fillText(`${player.damageLv}`, barX+250, barY+136);
         ctx.fillText(`${player.defense}`, barX+250, barY+190);
         ctx.fillText(`Lv ${player.level}`, barX+250, barY+245);
         ctx.fillText(`${player.exp} / ${player.expToNextLevel}`, barX+250, barY+300);

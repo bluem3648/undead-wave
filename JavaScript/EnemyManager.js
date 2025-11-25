@@ -127,9 +127,9 @@ export class EnemyManager {
                     let damage = 0;
                     const shootMod = weaponManager.shootMod; // 현재 무기 모드
                     
-                    if (shootMod === "pistol") damage = bullet.pistolDamage;
-                    else if (shootMod === "shotgun") damage = bullet.shotgunDamage;
-                    else if (shootMod === "rifle") damage = bullet.rifleDamage;
+                    if (shootMod === "pistol") damage = player.damage * bullet.pistolDamage;
+                    else if (shootMod === "shotgun") damage = player.damage * bullet.shotgunDamage;
+                    else if (shootMod === "rifle") damage = player.damage * bullet.rifleDamage;
 
                     zombie.takeDamage(damage); 
                     

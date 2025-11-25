@@ -1,7 +1,7 @@
 //------------기본 설정------------//
 import { Player } from './Player.js';;
 import { World } from './World.js';
-import { drawUI, drawGameOverScreen, drawUpgradeOptions, calculateUpgradeOptionBounds, statUI } from './UI.js';
+import { drawUI, drawGameOverScreen, drawUpgradeOptions, calculateUpgradeOptionBounds, statUI } from './Ui.js';
 import { EnemyManager } from './EnemyManager.js';
 import { WeaponManager } from './WeaponManager.js';
 import { Parts } from './Parts.js';
