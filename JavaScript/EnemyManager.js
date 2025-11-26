@@ -108,6 +108,36 @@ export class EnemyManager {
             allZombies.push(this.bossZombie);
         }
 
+        const pullZones = weaponManager.pullZones;
+        if (pullZones.length > 0) {
+            this.zombies.forEach(zombie => {
+                for (const zone of pullZones) {
+                    // 좀비의 중심과 장판의 중심 사이의 거리 계산
+                    const zombieCenterX = zombie.x + zombie.width / 2;
+                    const zombieCenterY = zombie.y + zombie.height / 2;
+
+                    const dx = zone.centerX - zombieCenterX;
+                    const dy = zone.centerY - zombieCenterY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    // 1-1. 장판 반경 내에 좀비가 있는지 확인
+                    if (distance < zone.radius) {
+                        // 1-2. 중앙으로 끌어당기기 (정규화된 방향 벡터 사용)
+                        if (distance > 0) {
+                            const normX = dx / distance;
+                            const normY = dy / distance;
+                            
+                            // 장판의 힘을 곱하여 이동
+                            // deltaTime을 곱하여 프레임 속도에 독립적으로 만듭니다. 
+                            const pullSpeed = zone.pullStrength * deltaTime * 60; 
+                            zombie.x += normX * pullSpeed; 
+                            zombie.y += normY * pullSpeed; 
+                        }
+                    }
+                }
+            });
+        }
+
         // 일반 좀비 업데이트 및 충돌
         for (let i = this.zombies.length - 1; i >= 0; i--) {
             const zombie = this.zombies[i];

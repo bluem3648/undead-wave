@@ -406,6 +406,21 @@ export class Player{
         return { x: dirX, y: dirY };
     }
 
+    startPullZone() {
+        // 발동 방향 (마지막 이동 방향 사용)
+        const dirX = this.lastMoveDirection.x;
+        const dirY = this.lastMoveDirection.y;
+
+        // 방향 벡터 정규화
+        const mag = Math.sqrt(dirX * dirX + dirY * dirY);
+        if (mag === 0) {
+            // 정지 상태일 경우 기본 방향(아래) 설정
+            return { x: 0, y: 1 };
+        }
+        
+        return { x: dirX / mag, y: dirY / mag }; // 정규화된 방향 벡터 반환
+    }
+
     // 백스텝 스킬 잠금 해제 확인 함수 (보스 3마리 처치 시)
     checkBackstepUnlock() {
         if (!this.backstepUnlocked && this.bossesKilled >= 3) { // 3마리 처치 조건
