@@ -23,8 +23,8 @@ export class WeaponManager {
         this.lastRayTime = 0;     // 마지막 광선 발사 시간
 
         // 회오리 스킬 쿨다운
-        this.PULLZONE_COOLDOWN = 10000; // 10초 쿨다운
-        this.lastPullZoneTime = 0;
+        this.PULLZONE_COOLDOWN = 6000; // 60초 쿨다운
+        this.lastPullZoneTime = 0; // 마지막 회오리 발사 시간
     }
 
     /**
@@ -64,14 +64,18 @@ export class WeaponManager {
     }
 
     // 끌어당김 장판 생성
-    castPullZone(direction) {
-        if (Date.now() - this.lastPullZoneTime < this.PULLZONE_COOLDOWN) {
+    castPullZone(timestamp) {
+        if (timestamp - this.lastPullZoneTime < this.PULLZONE_COOLDOWN) {
             return; // 쿨다운 중이면 생성하지 않음
         }
+        
+        // 플레이어에게 광선 발사 방향을 요청
+        const direction = this.player.startPullZone();
 
         const newZone = new PullZone(this.player, direction);
         this.pullZones.push(newZone);
-        this.lastPullZoneTime = Date.now();
+
+        this.lastPullZoneTime = timestamp;
     }
 
     /**

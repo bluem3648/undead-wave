@@ -2,12 +2,12 @@ export class PullZone {
     constructor(player, direction) {
         // 스탯 정의
         this.duration = 8000; // 장판 지속 시간 (예: 8초)
-        this.radius = 200; // 장판의 원형 반경 (꽤 큰 원)
+        this.radius = 300; // 장판의 원형 반경 (꽤 큰 원)
         this.pullStrength = 0.05; // 좀비를 끌어당기는 힘 (프레임당 이동 비율)
         this.spawnTime = Date.now();
 
         // 장판의 중앙 위치
-        const distance = 200; // 플레이어로부터 장판이 생성될 거리
+        const distance = 400; // 플레이어로부터 장판이 생성될 거리
         const normX = direction.x;
         const normY = direction.y;
 

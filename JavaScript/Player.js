@@ -48,6 +48,9 @@ export class Player{
         this.backstepCooldownTimer = 0; // 백스텝 쿨타임 타이머
         this.lastBackstepDirection = { x: 0, y: 0 }; // 마지막 이동 방향
 
+        // 회오리 스킬 관련 변수
+        this.tornadoUnlocked = true; // 회오리 스킬 잠금 해제 여부
+
         // 경험치 및 레벨
         this.level = 1; // 현재 레벨
         this.exp = 0;   // 현재 경험치
@@ -368,6 +371,15 @@ export class Player{
         return false;
     }
 
+    // 회오리 스킬 잠금 해제 확인
+    checkTornadoUnlock() {
+        if (!this.tornadoUnlocked && this.bossesKilled >= 5) {
+            this.tornadoUnlocked = true;
+            return true;
+        }
+        return false;
+    }
+
     // 광선 스킬 발동 방향 반환
     startRay() {
         if (!this.rayUnlocked) {
@@ -406,7 +418,12 @@ export class Player{
         return { x: dirX, y: dirY };
     }
 
+    // 회오리 스킬 발동 방향 반환
     startPullZone() {
+        if (!this.tornadoUnlocked) {
+            return null;
+        }
+
         // 발동 방향 (마지막 이동 방향 사용)
         const dirX = this.lastMoveDirection.x;
         const dirY = this.lastMoveDirection.y;

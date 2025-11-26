@@ -115,8 +115,7 @@ document.addEventListener('keydown', function(event) {
         if (player.startbackstep()) weaponManager.castCone();
     }
     if (event.key === 'r') { // 회오리
-        const direction = player.startPullZone();
-        weaponManager.castPullZone(direction);
+        weaponManager.castPullZone(Date.now());
     }
 
     if (key in keys) {
