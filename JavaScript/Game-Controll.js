@@ -32,7 +32,7 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 //맵
-const world = new World(3000, 3000);
+const world = new World(5000, 5000);
 
 
 
@@ -226,6 +226,7 @@ function update(timestamp) {
 
     // 그리기
     world.draw(ctx, worldImg);
+    world.drawFence(ctx, player);
     player.draw(ctx, keys); 
     enemyManager.draw(ctx, player, zombieImg);
     weaponManager.draw(ctx, bulletImg);

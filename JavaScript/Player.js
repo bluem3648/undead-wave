@@ -126,7 +126,7 @@ export class Player{
         this.rollCooldownTimer = Math.max(0, this.rollCooldownTimer - deltaTime);
         this.backstepCooldownTimer = Math.max(0, this.backstepCooldownTimer - deltaTime);
 
-        let moveX = 0;
+        let moveX = 0; 
         let moveY = 0;
         let currentSpeed = this.speed;
 
@@ -193,13 +193,21 @@ export class Player{
         this.x += moveX;
         this.y += moveY;
         
-        // 0보다 왼쪽/위로 못 가게
-        this.x = Math.max(0, this.x); 
-        this.y = Math.max(0, this.y);
+        // 화면의 절반 너비와 높이 계산
+        const halfScreenWidth = window.innerWidth / 2;
+        const halfScreenHeight = window.innerHeight / 2;
 
-        // 월드 오른쪽/아래쪽 경계를 못 넘게
-        this.x = Math.min(world.width - this.width, this.x); 
-        this.y = Math.min(world.height - this.height, this.y);
+        // 왼쪽 및 위쪽 경계 계산 (화면 절반만큼 안쪽으로)
+        const minX = halfScreenWidth - this.width / 2;
+        const minY = halfScreenHeight - this.height / 2;
+
+        // 오른쪽 및 아래쪽 경계 계산 (월드 끝에서 화면 절반만큼 안쪽으로)
+        const maxX = world.width - halfScreenWidth - this.width / 2;
+        const maxY = world.height - halfScreenHeight - this.height / 2;
+
+        // 이럼 이제 카메라 줌 지속 가능함
+        this.x = Math.max(minX, Math.min(maxX, this.x));
+        this.y = Math.max(minY, Math.min(maxY, this.y));
     }
 
     // draw 플레이어 그리기

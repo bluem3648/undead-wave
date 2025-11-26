@@ -4,10 +4,10 @@ export class World {
         this.width = width;
         this.height = height;  
 
-        //맵의 디자인
-        this.backgroundColor = '#2c3e50'; // 어두운 파란색 배경
-        this.borderColor = 'white'; // 약간 더 밝은 파란색 테두리
-        this.borderWidth = 10; // 테두리 두께
+        //꼬깔(플레이어 이동 범위)
+        this.fenceImage = new Image();
+        this.fenceImage.src = "resource/fence.png"
+        this.fenceSize = 50;
     }
 
     draw(ctx, worldImg) {
@@ -20,16 +20,34 @@ export class World {
         const img = new Image();
         img.src = worldImg;
         ctx.drawImage(img, 0, 0, this.width, this.height);
+    }
 
-        
-        // 맵의 '테두리' (월드 가장자리)
-        ctx.strokeStyle = this.borderColor;
-        ctx.lineWidth = this.borderWidth;
+    drawFence(ctx, player) {
+        // 플레이어 이동 가능 경계 계산 (player.js랑 같음)
+        const halfScreenWidth = window.innerWidth / 2;
+        const halfScreenHeight = window.innerHeight / 2;
+        const minX = halfScreenWidth - player.width / 2;
+        const minY = halfScreenHeight - player.height / 2;
+        const maxX = this.width - halfScreenWidth - player.width / 2;
+        const maxY = this.height - halfScreenHeight - player.height / 2;
 
-        // 테두리 두께 때문에 안쪽으로 살짝 그려지게 조정 
-        const halfBorder = this.borderWidth / 2;
-        ctx.strokeRect(halfBorder, halfBorder, 
-                       this.width - this.borderWidth, 
-                       this.height - this.borderWidth);
+        if (!this.fenceImage.complete) return;
+
+        // 상단 펜스
+        for (let x = minX; x <= maxX + player.width; x += this.fenceSize) {
+             ctx.drawImage(this.fenceImage, x, minY - this.fenceSize, this.fenceSize, this.fenceSize);
+        }
+        // 하단 펜스
+        for (let x = minX; x <= maxX + player.width; x += this.fenceSize) {
+             ctx.drawImage(this.fenceImage, x, maxY + player.height, this.fenceSize, this.fenceSize);
+        }
+        // 좌측 펜스
+        for (let y = minY; y <= maxY + player.height; y += this.fenceSize) {
+             ctx.drawImage(this.fenceImage, minX - this.fenceSize, y, this.fenceSize, this.fenceSize);
+        }
+        // 우측 펜스
+        for (let y = minY; y <= maxY + player.height; y += this.fenceSize) {
+             ctx.drawImage(this.fenceImage, maxX + player.width, y, this.fenceSize, this.fenceSize);
+        }
     }
 }
