@@ -11,12 +11,6 @@ export class Parts {
 
     }
 
-    // 좀비 위치 업데이트(플레이어를 따라다녀야함)
-    update(player, deltaTime, zombies){
-        // 방향 계산
-    }
-
-
 
     draw(ctx) {
         
