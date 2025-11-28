@@ -207,7 +207,7 @@ function update(timestamp) {
     if (currentState === GAME_STATE.UPGRADING) {
         clearCanvas();
         drawPausedGame(ctx); // 배경(맵, 플레이어, 적) 그리기 (헬퍼 함수)
-        drawUI(ctx, player, weaponManager.shootMod); // UI 그리기 (UI.js 호출)
+        drawUI(ctx, player, weaponManager.shootMod, partsManager.num, weaponManager, timestamp); // UI 그리기 (UI.js 호출)
         drawUpgradeOptions(ctx, canvas, currentUpgradeOptions); // 선택지 그리기 (UI.js 호출)
         requestAnimationFrame(update); // 다음 그리기 요청
         return; 
@@ -271,7 +271,10 @@ function update(timestamp) {
     //카메라 변환 해제
     ctx.restore();
 
-    drawUI(ctx, player, weaponManager.shootMod, partsManager.num);
+    // 스킬 시간 용
+    weaponManager.time = timestamp;
+    
+    drawUI(ctx, player, weaponManager.shootMod, partsManager.num, weaponManager, timestamp);
     statUI(isSpace, ctx, player);
 
     requestAnimationFrame(update);

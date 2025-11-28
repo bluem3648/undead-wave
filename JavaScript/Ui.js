@@ -18,11 +18,20 @@ rifleImg.src = "resource/weapon_image/rifle.png";
 const boomImg = new Image();
 boomImg.src = "resource/weapon_image/Bomb.png";
 
+const keyShift = new Image();
+keyShift.src = "undead%20wave%20start/shift.gif";
+const keyE = new Image();
+keyE.src = "undead%20wave%20start/E.gif";
+const keyQ = new Image();
+keyQ.src = "undead%20wave%20start/Q.gif";
+const keyR = new Image();
+keyR.src = "undead%20wave%20start/R.gif";
+
 
 const partsImg = new Image();
 partsImg.src =  "resource/weapon_image/parts.png";
 
-export function drawUI(ctx, player, shootMod, partsNum) {
+export function drawUI(ctx, player, shootMod, partsNum, weaponManager, timestamp) {
 
     // // --- 1. HP 및 방어력 텍스트 ---
     // ctx.fillStyle = 'white';
@@ -103,6 +112,56 @@ export function drawUI(ctx, player, shootMod, partsNum) {
     ctx.fillText(`: ${partsNum}`, 410, 66);
 
     ctx.drawImage(partsImg, 350, 30, 60, 60);
+
+
+    // 스킬 쿨타임
+    let skillX = window.innerWidth-80;
+    let skillY = 30;
+    let skillWidth = 70;
+    let skillHeight = 100;
+
+    //R
+    let tornadoCoolTime = (weaponManager.PULLZONE_COOLDOWN - (weaponManager.time - weaponManager.lastPullZoneTime))
+    if (tornadoCoolTime <0 ) tornadoCoolTime = 0;
+    if (player.tornadoUnlocked) ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    else ctx.fillStyle = 'rgba(30, 30, 30, 1)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight);
+    ctx.fillStyle = 'rgba(30, 30, 30, 0.5)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight * tornadoCoolTime / weaponManager.PULLZONE_COOLDOWN);
+    ctx.drawImage(keyR, skillX+10, skillY+20, 50, 50);
+
+    //Q
+    skillX -= skillWidth + 10;
+    if (player.backstepUnlocked) ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    else ctx.fillStyle = 'rgba(30, 30, 30, 1)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight);
+    ctx.fillStyle = 'rgba(30, 30, 30, 0.5)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight * player.backstepCooldownTimer  / player.backstepCooldown);
+    ctx.drawImage(keyQ, skillX+10, skillY+20, 50, 50);
+
+    //E
+    let layCoolTime = (weaponManager.RAY_COOLDOWN - (weaponManager.time - weaponManager.lastRayTime))
+    if (layCoolTime <0 ) layCoolTime = 0;
+    skillX -= skillWidth + 10;
+    if (player.rayUnlocked) ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    else ctx.fillStyle = 'rgba(30, 30, 30, 1)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight);
+    ctx.fillStyle = 'rgba(30, 30, 30, 0.5)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight * layCoolTime / weaponManager.RAY_COOLDOWN);
+    ctx.drawImage(keyE, skillX+10, skillY+20, 50, 50);
+
+
+    //shift
+    skillX -= skillWidth + 10;
+    ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight);
+    ctx.fillStyle = 'rgba(30, 30, 30, 0.5)';
+    ctx.fillRect(skillX, skillY, skillWidth, skillHeight * player.rollCooldownTimer / player.rollCooldown);
+    ctx.drawImage(keyShift, skillX+10, skillY+20, 50, 50);
+
+    // ctx.font = 'bold 20px Arial';
+    // ctx.fillStyle = 'black';
+    // ctx.fillText(`${Math.floor(player.rollCooldownTimer/400)}`, skillX+20, skillY+50);
 }
 
 /**

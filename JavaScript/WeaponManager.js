@@ -18,12 +18,14 @@ export class WeaponManager {
         this.shootMod = "pistol"; // 현재 무기 모드
         this.shootTime = 0;       // 마지막 발사 시간 (쿨다운 계산용)
 
+        this.time =0;
+
         // 광선 스킬 쿨다운
         this.RAY_COOLDOWN = 40000; // 광선 스킬 쿨다운 (40초)
         this.lastRayTime = 0;     // 마지막 광선 발사 시간
 
         // 회오리 스킬 쿨다운
-        this.PULLZONE_COOLDOWN = 6000; // 60초 쿨다운
+        this.PULLZONE_COOLDOWN = 60000; // 60초 쿨다운
         this.lastPullZoneTime = 0; // 마지막 회오리 발사 시간
     }
 
@@ -38,7 +40,7 @@ export class WeaponManager {
     // 광선 스킬 발동 요청 함수
     castRay(timestamp) {
         // 쿨다운 체크
-        if (timestamp - this.lastRayTime < this.RAY_COOLDOWN) {
+        if (this.time - this.lastRayTime < this.RAY_COOLDOWN) {
             return;
         }
 
@@ -50,7 +52,7 @@ export class WeaponManager {
         this.rays.push(newRay);
         
         // 쿨다운 타이머 업데이트
-        this.lastRayTime = timestamp;
+        this.lastRayTime = this.time;
     }
 
     // 부채꼴 공격 발동 요청 함수
@@ -65,7 +67,7 @@ export class WeaponManager {
 
     // 끌어당김 장판 생성
     castPullZone(timestamp) {
-        if (timestamp - this.lastPullZoneTime < this.PULLZONE_COOLDOWN) {
+        if (this.time - this.lastPullZoneTime < this.PULLZONE_COOLDOWN) {
             return; // 쿨다운 중이면 생성하지 않음
         }
         
@@ -75,7 +77,7 @@ export class WeaponManager {
         const newZone = new PullZone(this.player, direction);
         this.pullZones.push(newZone);
 
-        this.lastPullZoneTime = timestamp;
+        this.lastPullZoneTime = this.time;
     }
 
     /**
