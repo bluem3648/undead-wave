@@ -6,6 +6,7 @@ import { EnemyManager } from './EnemyManager.js';
 import { WeaponManager } from './WeaponManager.js';
 import { Parts } from './Parts.js';
 import { PartsManager } from './PartsManager.js';
+import { SurvivorManager } from './SurvivorManager.js';
 
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
@@ -41,6 +42,7 @@ const player = new Player(world.width, world.height);
 const enemyManager = new EnemyManager(world);
 const weaponManager = new WeaponManager(player);
 const partsManager = new PartsManager();
+const survivorManager = new SurvivorManager();
 
 
 
@@ -183,6 +185,13 @@ function update(timestamp) {
         return; 
     }
 
+     // 시민 소환 로직
+    if(survivorManager.isSpawn == false)
+        if (survivorManager.newSurvivor == null) 
+            survivorManager.spawnSurvivor(player);
+
+
+
     // 일반 플레이 상태 업데이트
     clearCanvas();
 
@@ -191,6 +200,7 @@ function update(timestamp) {
     enemyManager.updateSpawning(timestamp);
     weaponManager.update(timestamp, mouseX, mouseY, world);
     partsManager.updateAndCollide(player);
+    survivorManager.updateAndCollide(player)
 
     //충돌 처리 로직
     const collisionResults = enemyManager.updateAndCollide(player, weaponManager, deltaTime, partsManager, timestamp);
@@ -226,6 +236,8 @@ function update(timestamp) {
     enemyManager.draw(ctx, player);
     weaponManager.draw(ctx, bulletImg);
     partsManager.draw(ctx);
+    survivorManager.drawSuvivor(ctx);
+    survivorManager.drawImage(ctx, deltaTime);
 
 
     //카메라 변환 해제
