@@ -291,7 +291,12 @@ export class Player{
             return; 
         }
         // 2. 방어력 계산
-        let finalDamage = amount - this.defense;
+        let finalDamage = amount;
+        if (this.defense > 0) {
+            finalDamage = amount - this.defense;
+            this.defense -= amount;
+            if (this.defense < 0) this.defense = 0;
+        }
         if (finalDamage < 0) finalDamage = 0;
 
         // 3. HP 감소
