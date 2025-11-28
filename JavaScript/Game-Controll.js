@@ -8,6 +8,34 @@ import { Parts } from './Parts.js';
 import { PartsManager } from './PartsManager.js';
 import { SurvivorManager } from './SurvivorManager.js';
 
+
+
+// 음악 추가
+const audioPath = "resource/sound.mp3"; 
+const gameBGM = new Audio(audioPath);
+gameBGM.loop = true;
+
+// 음악 재생 함수
+function playBGM() {
+    gameBGM.play()
+        .then(() => {
+            console.log("오디오 재생");
+        })
+        .catch(error => {
+            // 브라우저가 자동 재생을 막았을 때
+            console.error("자동 재생 차단됨.", error);
+        });
+}
+//키보드 입력 시 재생 함수 호출
+document.addEventListener('keydown', function handler() {
+    playBGM();
+    document.removeEventListener('keydown', handler);
+}, { once: true }); //이벤트가 한 번만 실행되도록 
+
+
+
+
+
 const canvas = document.getElementById('GameCanvas');
 const ctx = canvas.getContext('2d'); 
 
