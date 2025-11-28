@@ -3,6 +3,7 @@ import { Bomb } from './Bomb.js';
 import { checkCollision } from './Utils.js'; // 충돌 체크 함수
 import { Ray } from './Ray.js';
 import { ConeAttack } from './ConeAttack.js';
+import { PullZone } from './PullZone.js';
 
 // 무기(총알, 폭탄)와 관련된 모든 것을 관리하는 클래스
 export class WeaponManager {
@@ -12,6 +13,7 @@ export class WeaponManager {
         this.bombs = [];   // 현재 활성화된 모든 폭탄 목록
         this.rays = [];    // 현재 활성화된 모든 광선 목록
         this.coneAttacks = []; // 현재 활성화된 부채꼴 공격 목록
+        this.pullZones = []; // 현재 활성화된 회오리 장판 목록
 
         this.shootMod = "pistol"; // 현재 무기 모드
         this.shootTime = 0;       // 마지막 발사 시간 (쿨다운 계산용)
@@ -19,6 +21,10 @@ export class WeaponManager {
         // 광선 스킬 쿨다운
         this.RAY_COOLDOWN = 40000; // 광선 스킬 쿨다운 (40초)
         this.lastRayTime = 0;     // 마지막 광선 발사 시간
+
+        // 회오리 스킬 쿨다운
+        this.PULLZONE_COOLDOWN = 6000; // 60초 쿨다운
+        this.lastPullZoneTime = 0; // 마지막 회오리 발사 시간
     }
 
     /**
@@ -55,6 +61,21 @@ export class WeaponManager {
         // 부채꼴 공격 생성 및 배열에 추가
         const newCone = new ConeAttack(this.player, direction);
         this.coneAttacks.push(newCone);
+    }
+
+    // 끌어당김 장판 생성
+    castPullZone(timestamp) {
+        if (timestamp - this.lastPullZoneTime < this.PULLZONE_COOLDOWN) {
+            return; // 쿨다운 중이면 생성하지 않음
+        }
+        
+        // 플레이어에게 광선 발사 방향을 요청
+        const direction = this.player.startPullZone();
+
+        const newZone = new PullZone(this.player, direction);
+        this.pullZones.push(newZone);
+
+        this.lastPullZoneTime = timestamp;
     }
 
     /**
@@ -124,6 +145,15 @@ export class WeaponManager {
                 this.coneAttacks.splice(i, 1);
             }
         }
+
+        // 6. 회오리 장판 업데이트 및 제거
+        for (let i = this.pullZones.length - 1; i >= 0; i--) {
+            const tornado = this.pullZones[i];
+            const isFinished = tornado.update(now);
+            if (isFinished) {
+                this.pullZones.splice(i, 1);
+            }
+        }
     }
 
     /**
@@ -185,6 +215,7 @@ export class WeaponManager {
         this.bombs.forEach(bomb => bomb.draw(ctx));
         this.rays.forEach(ray => ray.draw(ctx));
         this.coneAttacks.forEach(cone => cone.draw(ctx));
+        this.pullZones.forEach(zone => zone.draw(ctx));
     }
     
     /**

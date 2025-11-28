@@ -105,14 +105,17 @@ document.addEventListener('keydown', function(event) {
         isSpace = !(isSpace);
 
     // 스킬 사용
-    if (event.key === 'Shift') {
+    if (event.key === 'Shift') { // 구르기
         player.startRoll();
     }
-    if (event.key === 'e') {
+    if (event.key === 'e') { // 광선
         weaponManager.castRay(Date.now());
     }
-    if (event.key === 'q') {
+    if (event.key === 'q') { // 백스텝
         if (player.startbackstep()) weaponManager.castCone();
+    }
+    if (event.key === 'r') { // 회오리
+        weaponManager.castPullZone(Date.now());
     }
 
     if (key in keys) {

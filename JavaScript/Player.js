@@ -48,6 +48,9 @@ export class Player{
         this.backstepCooldownTimer = 0; // 백스텝 쿨타임 타이머
         this.lastBackstepDirection = { x: 0, y: 0 }; // 마지막 이동 방향
 
+        // 회오리 스킬 관련 변수
+        this.tornadoUnlocked = true; // 회오리 스킬 잠금 해제 여부
+
         // 경험치 및 레벨
         this.level = 1; // 현재 레벨
         this.exp = 0;   // 현재 경험치
@@ -376,6 +379,15 @@ export class Player{
         return false;
     }
 
+    // 회오리 스킬 잠금 해제 확인
+    checkTornadoUnlock() {
+        if (!this.tornadoUnlocked && this.bossesKilled >= 5) {
+            this.tornadoUnlocked = true;
+            return true;
+        }
+        return false;
+    }
+
     // 광선 스킬 발동 방향 반환
     startRay() {
         if (!this.rayUnlocked) {
@@ -412,6 +424,26 @@ export class Player{
 
         // 방향 벡터 반환
         return { x: dirX, y: dirY };
+    }
+
+    // 회오리 스킬 발동 방향 반환
+    startPullZone() {
+        if (!this.tornadoUnlocked) {
+            return null;
+        }
+
+        // 발동 방향 (마지막 이동 방향 사용)
+        const dirX = this.lastMoveDirection.x;
+        const dirY = this.lastMoveDirection.y;
+
+        // 방향 벡터 정규화
+        const mag = Math.sqrt(dirX * dirX + dirY * dirY);
+        if (mag === 0) {
+            // 정지 상태일 경우 기본 방향(아래) 설정
+            return { x: 0, y: 1 };
+        }
+        
+        return { x: dirX / mag, y: dirY / mag }; // 정규화된 방향 벡터 반환
     }
 
     // 백스텝 스킬 잠금 해제 확인 함수 (보스 3마리 처치 시)
