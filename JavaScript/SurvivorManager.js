@@ -67,10 +67,9 @@ export class SurvivorManager {
 
             let x = this.newSurvivor.x
             let y = this.newSurvivor.y
-            if (this.whatBuff == "hp") ctx.drawImage(imgHp, x, y-80, 55, 55);
-            else if (this.whatBuff == "def") ctx.drawImage(imgDef, x, y-80, 55, 50);
-            else if (this.whatBuff == "exp") ctx.drawImage(imgExp, x, y-80, 50, 50);
-
+            if (this.whatBuff == "hp") ctx.drawImage(imgHp, x-8, y-80, 55, 55);
+            else if (this.whatBuff == "def") ctx.drawImage(imgDef, x-8, y-80, 55, 50);
+            else if (this.whatBuff == "exp") ctx.drawImage(imgExp, x-10, y-80, 50, 50);
             
 
             // 페이드 아웃 시작

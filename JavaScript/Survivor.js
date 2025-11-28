@@ -1,8 +1,11 @@
+const img = new Image();
+img.src =  "resource/resident.gif";
+
 export class Survivor {
     constructor(x, y) {
         // 크기
-        this.width = 50;
-        this.height = 50;
+        this.width = 40;
+        this.height = 60;
         this.color = 'green';
 
         // 스폰 위치
@@ -18,10 +21,6 @@ export class Survivor {
     }
 
 
-    update(player, deltaTime){
-        // 스폰 시간
-    }
-
 
 
     draw(ctx) {
@@ -32,8 +31,8 @@ export class Survivor {
         console.log("시민 스폰" + this.x, this.y);
 
         // 히트박스 (확인용이라 주석 처리)
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        // ctx.fillStyle = this.color;
+        // ctx.fillRect(this.x, this.y, this.width, this.height);
 
         if (this.gaze<=100) 
             this.gazeRatio = this.width * this.gaze / 100; 
@@ -46,9 +45,9 @@ export class Survivor {
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y-20, this.width, 10);
         
-        // const img = new Image();
-        // img.src =  "resource/weapon_image/parts.png";
-        // ctx.drawImage(img, this.x-13, this.y-14, this.width+25, this.height+25);
+
+        // 시민 이미지 그리기
+        ctx.drawImage(img, this.x-10, this.y-10, this.width+30, this.height+30);
 
     }
 
