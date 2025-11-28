@@ -242,6 +242,7 @@ function update(timestamp) {
     weaponManager.draw(ctx, bulletImg);
     partsManager.draw(ctx);
     survivorManager.drawSuvivor(ctx);
+    survivorManager.drawImage(ctx, deltaTime);
 
 
     //카메라 변환 해제

@@ -11,16 +11,23 @@ export class Survivor {
 
         this.gaze = 0;
         this.gazeRatio = 0;
+
+        this.isFading = false;
+        this.opacity = 1.0; // 투명도 (1.0 = 불투명, 0.0 = 투명)
+        this.fadeSpeed = 0.001; // 초당 감소할 투명도 값 (예: 1.5면 1/1.5초만에 사라짐)
     }
 
 
-    update(player, deltaTime, zombies){
+    update(player, deltaTime){
         // 스폰 시간
     }
 
 
 
     draw(ctx) {
+
+        // 투명도 설정
+        ctx.globalAlpha = this.opacity;
 
         console.log("시민 스폰" + this.x, this.y);
 
