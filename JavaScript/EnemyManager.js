@@ -340,8 +340,8 @@ export class EnemyManager {
         return { playerDied, didLevelUp };
     }
 
-    draw(ctx, player, zombieImg) {
-        this.zombies.forEach(zombie => zombie.draw(ctx, player, zombieImg));
+    draw(ctx, player) {
+        this.zombies.forEach(zombie => zombie.draw(ctx, player));
 
         if (this.bossZombie) {
             this.bossZombie.draw(ctx, player);

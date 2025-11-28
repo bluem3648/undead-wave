@@ -7,6 +7,15 @@ export class Player{
         this.height = 50;
         this.color = 'blue';
 
+        // 플레이어 이미지
+        this.playerImg1 = new Image();
+        this.playerImg1.src = "resource/player_image/idleRight.gif";
+        this.playerImg2 = new Image();
+        this.playerImg2.src ="resource/player_image/idleLeft.png";
+        this.playerImg3 = new Image();
+        this.playerImg3.src = "resource/player_image/idleRight.gif";
+        this.playerHurtImg = new Image();
+        this.playerHurtImg.src = "resource/player_image/hurt.gif"
         // 월드 중앙에 플레이어 위치시키기
         this.setInitialPosition(worldWidth, worldHeight);
 
@@ -218,15 +227,16 @@ export class Player{
 
         if (keys.d || keys.ㅇ) this.key = "d"
         if (keys.a || keys.ㅁ) this.key = "a"
-        const img = new Image();
+        
+        let img;
 
         //플레이어 캐릭터가 이동 방향 바라보게
-        if (this.key == "d") img.src = "resource/player_image/idleRight.gif";
-        else if (this.key == "a") img.src = "resource/player_image/idleLeft.png";
-        else img.src = "resource/player_image/idleRight.gif";
+        if (this.key == "d") img = this.playerImg1;
+        else if (this.key == "a") img = this.playerImg2
+        else img = this.playerImg3;
 
         if (this.isInvincible) {
-            img.src = "resource/player_image/hurt.gif";
+            img = this.playerHurtImg;
 
             const timeElapsed = Date.now() - this.invincibilityTimer;
             // 무적일 때 잠깐 안 보이게 (깜빡임 효과)

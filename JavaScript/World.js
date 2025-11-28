@@ -4,22 +4,23 @@ export class World {
         this.width = width;
         this.height = height;  
 
+        //맵 이미지
+        this.worldImg = new Image();
+        this.worldImg.src = "undead%20wave%20start/demo2_12.png"
+
         //꼬깔(플레이어 이동 범위)
         this.fenceImage = new Image();
         this.fenceImage.src = "resource/fence.png"
         this.fenceSize = 50;
     }
 
-    draw(ctx, worldImg) {
-        //맵의 '바탕' (월드 크기만큼)
-        ctx.fillStyle = this.backgroundColor;
-        ctx.fillRect(0, 0, this.width, this.height);
-
-
-        //맵 배경 이미지 설정
-        const img = new Image();
-        img.src = worldImg;
-        ctx.drawImage(img, 0, 0, this.width, this.height);
+    draw(ctx) {
+        //맵 배경 그리기
+        if (!this.worldImg.complete) {
+            // 아직 로딩되지 않았으면 아무것도 그리지 않고 반환
+            return; 
+        }
+        ctx.drawImage(this.worldImg, 0, 0, this.width, this.height);
     }
 
     drawFence(ctx, player) {

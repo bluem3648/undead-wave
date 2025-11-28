@@ -35,7 +35,6 @@ window.addEventListener('resize', resizeCanvas);
 const world = new World(5000, 5000);
 
 
-
 //------------게임 객체 생성------------//
 
 const player = new Player(world.width, world.height);
@@ -47,10 +46,6 @@ const partsManager = new PartsManager();
 
 
 //------------이미지 로드------------//
-const zombieImg = [
-    "resource/zombie_image/zombieRight.png",
-     "resource/zombie_image/zombieLeft.png"
-]
 
 const bulletImg = [
     "",
@@ -63,9 +58,6 @@ const bulletImg = [
     "resource/bullet_image/bullet7.png",
     "resource/bullet_image/bullet8.png"
 ]
-
-const worldImg = "undead%20wave%20start/demo2_12.png"
-
 
 
 
@@ -228,10 +220,10 @@ function update(timestamp) {
     ctx.translate(cameraX, cameraY);
 
     // 그리기
-    world.draw(ctx, worldImg);
+    world.draw(ctx);
     world.drawFence(ctx, player);
     player.draw(ctx, keys); 
-    enemyManager.draw(ctx, player, zombieImg);
+    enemyManager.draw(ctx, player);
     weaponManager.draw(ctx, bulletImg);
     partsManager.draw(ctx);
 
@@ -258,9 +250,9 @@ function drawPausedGame(ctx) {
     ctx.save();
     ctx.translate(cameraX, cameraY);
     // (업데이트 없이 그리기만 호출)
-    world.draw(ctx, worldImg);
+    world.draw(ctx);
     player.draw(ctx, keys);
-    enemyManager.draw(ctx, player, zombieImg);
+    enemyManager.draw(ctx, player);
     weaponManager.draw(ctx, bulletImg);
     ctx.restore();
 }

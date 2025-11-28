@@ -5,6 +5,13 @@ export class Zombie {
         this.height = 40;
         this.color = 'green';
 
+        //좀비 이미지
+        this.zombieImg1 = new Image();
+        this.zombieImg1.src = "resource/zombie_image/zombieRight.png"
+
+        this.zombieImg2 = new Image();
+        this.zombieImg2.src =  "resource/zombie_image/zombieLeft.png"
+
         // 스폰 위치
         this.x = x;
         this.y = y;
@@ -67,15 +74,15 @@ export class Zombie {
         this.hpPosL = this.x+3;
     }
 
-    draw(ctx, player, zombieImg) {
+    draw(ctx, player) {
         // 좀비 몸체 그리기
         // ctx.fillStyle = this.color;
         // ctx.fillRect(this.x, this.y, this.width, this.height);
-        const img = new Image();
+        let img;
 
         //좀비가 플레이어 바라보게 설정
-        if ((player.x-this.x)>=0) img.src = zombieImg[0];
-        else img.src = zombieImg[1];
+        if ((player.x-this.x)>=0) img = this.zombieImg1;
+        else img = this.zombieImg2;
 
         //ctx.drawImage(img, this.x-10, this.y-10, this.width+25, this.height+25);
         if ((player.x-this.x)>=0) ctx.drawImage(img, this.x-10+2, this.y-10, this.width+25, this.height+25);

@@ -5,6 +5,23 @@ import { roundRect } from './Utils.js';
  * @param {Player} player - 플레이어 객체 (정보 표시용)
  * @param {string} shootMod - 현재 선택된 무기 모드
  */
+
+const pistolImg = new Image();
+pistolImg.src = "resource/weapon_image/pistol.png";
+
+const shotgunImg = new Image();
+shotgunImg.src = "resource/weapon_image/shotgun.png";
+
+const rifleImg = new Image();
+rifleImg.src = "resource/weapon_image/rifle.png";
+
+const boomImg = new Image();
+boomImg.src = "resource/weapon_image/Bomb.png";
+
+
+const partsImg = new Image();
+partsImg.src =  "resource/weapon_image/parts.png";
+
 export function drawUI(ctx, player, shootMod, partsNum) {
 
     // // --- 1. HP 및 방어력 텍스트 ---
@@ -54,28 +71,28 @@ export function drawUI(ctx, player, shootMod, partsNum) {
     // (이미지 로드는 비효율적이므로, 실제로는 이미지 객체를 미리 로드해두는 것이 좋음)
 
     // - 권총
-    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "권총", "resource/weapon_image/pistol.png", shootMod === "pistol", {x:10, y:10, w:50, h:50});
+    drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "권총", pistolImg, shootMod === "pistol", {x:10, y:10, w:50, h:50});
     
     // - 샷건
     weaponX += weaponWidth + 10;
     if (partsNum>=20)
-        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "샷건", "resource/weapon_image/shotgun.png", shootMod === "shotgun", {x:10, y:0, w:50, h:80});
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "샷건", shotgunImg, shootMod === "shotgun", {x:10, y:0, w:50, h:80});
     else
-        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "20X", "resource/weapon_image/parts.png", shootMod === "shotgun", {x:5, y:0, w:60, h:80});
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "20X", partsImg, shootMod === "shotgun", {x:5, y:0, w:60, h:80});
 
     // - 라이플
     weaponX += weaponWidth + 10;
     if (partsNum>=50)
-        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "라이플", "resource/weapon_image/rifle.png", shootMod === "rifle", {x:10, y:-10, w:50, h:100});
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "라이플", rifleImg, shootMod === "rifle", {x:10, y:-10, w:50, h:100});
     else
-        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "50X", "resource/weapon_image/parts.png", shootMod === "rifle", {x:5, y:0, w:60, h:80});
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "50X", partsImg, shootMod === "rifle", {x:5, y:0, w:60, h:80});
 
     // - 폭탄
     weaponX += weaponWidth + 10;
     if (partsNum>=100)
-        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "폭탄", "resource/weapon_image/Bomb.png", shootMod === "bomb", {x:10, y:10, w:50, h:50});
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "폭탄", boomImg, shootMod === "bomb", {x:10, y:10, w:50, h:50});
     else 
-        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "100X", "resource/weapon_image/parts.png", shootMod === "bomb", {x:5, y:0, w:60, h:80});
+        drawWeaponSlot(ctx, weaponX, weaponY, weaponWidth, weaponHeight, "100X", partsImg, shootMod === "bomb", {x:5, y:0, w:60, h:80});
     
 
 
@@ -85,15 +102,13 @@ export function drawUI(ctx, player, shootMod, partsNum) {
     ctx.font = 'bold 20px Arial';
     ctx.fillText(`: ${partsNum}`, 410, 66);
 
-    const partsImg = new Image();
-    partsImg.src =  "resource/weapon_image/parts.png";
     ctx.drawImage(partsImg, 350, 30, 60, 60);
 }
 
 /**
  * (헬퍼 함수) 무기 슬롯 1개를 그립니다.
  */
-function drawWeaponSlot(ctx, x, y, w, h, name, imgSrc, isSelected, imgParams) {
+function drawWeaponSlot(ctx, x, y, w, h, name, weaponImg, isSelected, imgParams) {
     ctx.fillStyle = 'rgba(70, 70, 70, 0.5)';
     ctx.fillRect(x, y, w, h);
 
@@ -106,8 +121,8 @@ function drawWeaponSlot(ctx, x, y, w, h, name, imgSrc, isSelected, imgParams) {
     ctx.strokeStyle = isSelected ? 'white' : 'transparent';
     ctx.strokeRect(x, y, w, h);
 
-    const img = new Image();
-    img.src = imgSrc;
+   ;let img
+    img = weaponImg;
     ctx.drawImage(img, x + imgParams.x, y + imgParams.y, imgParams.w, imgParams.h);
 }
 

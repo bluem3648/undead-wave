@@ -6,6 +6,12 @@ export class BossZombie extends Zombie {
         // 부모 클래스 생성자 호출
         super(x, y, hpMultiplier, speedMultiplier, damageMultiplier);
 
+        // 보스 이미지
+        this.BossZombieimg1 = new Image();
+        this.BossZombieimg1.src = "resource/boss_image/bossRight.png";
+        this.BossZombieimg2 = new Image();
+        this.BossZombieimg2.src = "resource/boss_image/bossLeft.gif";
+
         // 보스 스탯으로 덮어쓰기
  
         // 외형
@@ -30,10 +36,10 @@ export class BossZombie extends Zombie {
         // 좀비 몸체 그리기
         // ctx.fillStyle = this.color;
         // ctx.fillRect(this.x, this.y, this.width, this.height);
-        const img = new Image();
+        let img;
         //좀비가 플레이어 바라보게 설정
-        if ((player.x-this.x)>=0) img.src = "resource/boss_image/bossRight.png";
-        else img.src = "resource/boss_image/bossLeft.gif";
+        if ((player.x-this.x)>=0) img = this.BossZombieimg1;
+        else img = this.BossZombieimg2;
         ctx.drawImage(img, this.x-10, this.y-10, this.width+25, this.height+25);
 
         // 좀비 체력바 그리기
